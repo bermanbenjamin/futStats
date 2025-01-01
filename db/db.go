@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	models "github.com/bermanbenjamin/futStats/models/players"
+	"github.com/bermanbenjamin/futStats/models"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,6 +27,7 @@ func Init() {
 	}
 
 	db.AutoMigrate(&models.Player{})
+	db.AutoMigrate(&models.Season{})
 
 	DB = db
 }

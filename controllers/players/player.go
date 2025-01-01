@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	models "github.com/bermanbenjamin/futStats/models/players"
-	repositories "github.com/bermanbenjamin/futStats/repositories/players"
+	"github.com/bermanbenjamin/futStats/models"
+	"github.com/bermanbenjamin/futStats/repositories"
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,14 +37,15 @@ func GetPlayer(ctx *gin.Context) {
 		return
 	}
 
-	player, err := repositories.GetPlayers(id)
+	player, err := repositories.GetPlayerById(id)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "Failed to get player"})
 		return
 	}
 
-	if player.ID == 0 {
-		ctx.JSON(http.StatusNoContent, gin.H{"message": "No players found for"})
+	if player.ID == "" {
+		ctx.JSON(404, gin.H{"error": "Player does not exist"})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, player)
@@ -67,10 +68,10 @@ func CreatePlayer(ctx *gin.Context) {
 }
 
 func UpdatePlayer(ctx *gin.Context) {
-	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	id := ctx.Query("id")
 
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": "Invalid id"})
+	if id == "" {
+		ctx.JSON(400, gin.H{"error": "Missing id query parameter"})
 		return
 	}
 
@@ -80,15 +81,15 @@ func UpdatePlayer(ctx *gin.Context) {
 		return
 	}
 
-	player.ID = uint(id)
+	player.ID = id
+	updatedPlayer, err := repositories.UpdatePlayer(player)
 
-	player, err = repositories.UpdatePlayer(player)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "Failed to update player"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, player)
+	ctx.JSON(http.StatusOK, updatedPlayer)
 }
 
 func DeletePlayer(ctx *gin.Context) {

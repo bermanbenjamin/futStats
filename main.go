@@ -1,15 +1,23 @@
 package main
 
 import (
+	"os"
+
 	controllers "github.com/bermanbenjamin/futStats/controllers/players"
 	"github.com/bermanbenjamin/futStats/db"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	db.Init()
-
+	_ = godotenv.Load(".env")
 	g := gin.Default()
+
+	db.Init()                 // Use env vars for DB connection
+	port := os.Getenv("PORT") // Default to 8080 if unset
+	if port == "" {
+		port = "8080"
+	}
 
 	{
 		v1 := g.Group("/api/v1")
@@ -22,6 +30,8 @@ func main() {
 			players.DELETE("/:id", controllers.DeletePlayer)
 		}
 
-		g.Run(":8080")
 	}
+
+	// Routes setup
+	g.Run(":" + port)
 }
