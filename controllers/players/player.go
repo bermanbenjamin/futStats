@@ -14,7 +14,6 @@ func GetPlayers(ctx *gin.Context) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			// Log the panic error
 			log.Printf("Recovered from panic: %v", r)
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		}
