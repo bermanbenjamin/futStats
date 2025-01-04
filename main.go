@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	controllers "github.com/bermanbenjamin/futStats/controllers/players"
-	"github.com/bermanbenjamin/futStats/db"
+	controllers "github.com/bermanbenjamin/futStats/api/apicontrollers/players"
+	"github.com/bermanbenjamin/futStats/api/db"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
