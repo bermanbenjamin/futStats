@@ -33,7 +33,7 @@ func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, players)
+	ctx.JSON(http.StatusOK, gin.H{"data": players, "total": len(players)} )
 }
 
 func (h *PlayerHandler) GetPlayer(ctx *gin.Context) {
