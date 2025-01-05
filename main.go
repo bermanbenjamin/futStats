@@ -6,6 +6,7 @@ import (
 	"github.com/bermanbenjamin/futStats/internal/config"
 	"github.com/bermanbenjamin/futStats/internal/config/db"
 	"github.com/bermanbenjamin/futStats/internal/transport/http"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,6 +25,9 @@ func main() {
 	dep := config.InitializeDependencies(db.DB)
 
 	g := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	g.Use(cors.New(config))
 
 	http.SetupRouter(g, dep)
 
