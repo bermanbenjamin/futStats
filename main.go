@@ -1,37 +1,34 @@
 package main
 
 import (
-	"os"
+	"log"
 
-	controllers "github.com/bermanbenjamin/futStats/api/apicontrollers/players"
-	"github.com/bermanbenjamin/futStats/api/db"
+	"github.com/bermanbenjamin/futStats/internal/config"
+	"github.com/bermanbenjamin/futStats/internal/config/db"
+	"github.com/bermanbenjamin/futStats/internal/transport/http"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	_ = godotenv.Load(".env")
+
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
+	err = db.InitDB(cfg.DatabaseUrl)
+	if err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+
+	dep := config.InitializeDependencies(db.DB)
+
 	g := gin.Default()
 
-	db.Init()                 // Use env vars for DB connection
-	port := os.Getenv("PORT") // Default to 8080 if unset
-	if port == "" {
-		port = "8080"
+	http.SetupRouter(g, dep)
+
+	log.Printf("Starting server on %s...", cfg.ServerAddress)
+	if err := g.Run(":" + cfg.ServerAddress); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
 	}
-
-	{
-		v1 := g.Group("/api/v1")
-		var players = v1.Group("/players")
-		{
-			players.GET("/", controllers.GetPlayers)
-			players.GET("/:id", controllers.GetPlayer)
-			players.POST("/", controllers.CreatePlayer)
-			players.PUT("/:id", controllers.UpdatePlayer)
-			players.DELETE("/:id", controllers.DeletePlayer)
-		}
-
-	}
-
-	// Routes setup
-	g.Run(":" + port)
 }
