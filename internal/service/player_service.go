@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/bermanbenjamin/futStats/internal/models"
+	"github.com/bermanbenjamin/futStats/internal/model.
 	"github.com/bermanbenjamin/futStats/internal/repository"
 	"github.com/google/uuid"
 )
@@ -14,19 +14,19 @@ func NewPlayerService(repo *repository.PlayerRepository) *PlayerService {
 	return &PlayerService{repo: repo}
 }
 
-func (s *PlayerService) GetAllPlayers() ([]models.Player, error) {
+func (s *PlayerService) GetAllPlayers() ([]model.Player, error) {
 	return s.repo.GetAllPlayers()
 }
 
-func (s *PlayerService) GetPlayer(id uuid.UUID) (*models.Player, error) {
+func (s *PlayerService) GetPlayer(id uuid.UUID) (*model.Player, error) {
 	return s.repo.GetPlayerById(id)
 }
 
-func (s *PlayerService) CreatePlayer(player *models.Player) (*models.Player, error) {
+func (s *PlayerService) CreatePlayer(player *model.Player) (*model.Player, error) {
 	return s.repo.AddPlayer(*player)
 }
 
-func (s *PlayerService) UpdatePlayer(player *models.Player) (*models.Player, error) {
+func (s *PlayerService) UpdatePlayer(player *model.Player) (*model.Player, error) {
 	return s.repo.UpdatePlayer(*player)
 }
 

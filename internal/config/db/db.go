@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/bermanbenjamin/futStats/internal/models"
+	"github.com/bermanbenjamin/futStats/internal/model.
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -22,10 +22,10 @@ func InitDB(dbURL string) (err error) {
 		return err
 	}
 
-	err = DB.AutoMigrate(&models.Player{}, &models.Season{}, &models.Match{}, &models.Event{}, &models.League{})
+	err = DB.AutoMigrate(&model.Player{}, &model.Season{}, &model.Match{}, &model.Event{}, &model.League{})
 	if err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
-		return errors.New("Error migrating models from database: " + err.Error())
+		return errors.New("Error migrating model.from database: " + err.Error())
 	}
 
 	return nil
