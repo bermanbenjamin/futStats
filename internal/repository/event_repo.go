@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"log"
 
 	model "github.com/bermanbenjamin/futStats/internal/models"
@@ -16,14 +17,14 @@ func NewEventsRepository(db *gorm.DB) *EventsRepository {
     return &EventsRepository{db: db}
 }
 
-func (r *EventsRepository) GetEventsByPlayerId(playerId uuid.UUID) []model.Event {
+func (r *EventsRepository) GetEventsByPlayerId(playerId uuid.UUID) ([]model.Event, error) {
 
 	var events []model.Event = make([]model.Event, 0)
-	if result := r.db.Where("player_id =?", playerId).Find(&events); result.Error != nil {
-		log.Println(`Error to find events returned from database for player with id: `, playerId) 
-		panic(result.Error)
+	if result := r.db.Preload("Player").Preload("Assistent").Preload("Match").Where("player_id = ?", playerId).Find(&events); result != nil {
+		log.Printf("Error getting events for player with ID %v: %v", playerId, result.Error)
+        return nil, errors.New("Could not find events for player with ID: " + playerId.String())
     }
-	return events
+	return events, nil
 }
 
 func (r *EventsRepository) CreateEvent(event *model.Event) (createdEvent *model.Event, err error) { 
