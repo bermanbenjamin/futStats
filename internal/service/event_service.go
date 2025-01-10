@@ -24,3 +24,19 @@ func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]model.Event
     
 	return events, nil
 }
+
+func (s *EventService) CreateEvent(event *model.Event) (*model.Event, error) {
+	player, err := s.playerService.GetPlayer(event.PlayerId)
+    if err != nil {
+        return nil, err
+    }
+
+	event.Player = *player
+
+    newEvent, err := s.repo.CreateEvent(event)
+    if err != nil {
+        return nil, err
+    }
+
+    return newEvent, nil
+}

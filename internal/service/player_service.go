@@ -2,6 +2,7 @@ package service
 
 import (
 	model "github.com/bermanbenjamin/futStats/internal/models"
+	"github.com/bermanbenjamin/futStats/internal/models/enums"
 	"github.com/bermanbenjamin/futStats/internal/repository"
 	"github.com/google/uuid"
 )
@@ -32,4 +33,23 @@ func (s *PlayerService) UpdatePlayer(player *model.Player) (*model.Player, error
 
 func (s *PlayerService) DeletePlayer(id uuid.UUID) error {
 	return s.repo.DeletePlayer(id)
+}
+
+func (s *PlayerService) UpdatePlayerByEvent(event model.Event) (*model.Player, error) {
+	player := event.Player
+
+	switch event.Type {
+		case enums.Goal:
+            player.Goals++
+        case enums.Assist:
+            player.Assists++
+        case enums.Dribble:
+            player.Dribbles++
+        case enums.Disarm:
+            player.Disarms++
+        default:
+            return nil, nil // Invalid event type, do nothing with the player's stats.
+	}
+
+    return s.repo.UpdatePlayer(player)
 }
