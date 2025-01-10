@@ -16,7 +16,11 @@ func NewEventService(repo *repository.EventsRepository, playerService *PlayerSer
 }
 
 func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]model.Event, error) {
-	events := s.repo.GetEventsByPlayerId(playerId)
+	events, err := s.repo.GetEventsByPlayerId(playerId)
+
+	if err != nil {
+		return nil, err
+	}
     
 	return events, nil
 }

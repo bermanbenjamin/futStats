@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/bermanbenjamin/futStats/internal/model.
+	model "github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/repository"
 	"github.com/google/uuid"
 )
