@@ -1,8 +1,8 @@
 package enums
 
 const (
-	Goal = iota
-	Assist
-	Dribble
-	Disarm
+	Goal = "Goal"
+	Assist = "Assist"
+	Dribble = "Dribble"
+	Disarm = "Disarm"
 )
