@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/bermanbenjamin/futStats/internal/model.
+	model "github.com/bermanbenjamin/futStats/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
