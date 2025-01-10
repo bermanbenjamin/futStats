@@ -14,8 +14,8 @@ func NewPlayerService(repo *repository.PlayerRepository) *PlayerService {
 	return &PlayerService{repo: repo}
 }
 
-func (s *PlayerService) GetAllPlayers() ([]model.Player, error) {
-	return s.repo.GetAllPlayers()
+func (s *PlayerService) GetAllPlayers(filterQuery string, filterValue string) ([]*model.Player, error) {
+	return s.repo.GetAllPlayersBy(filterQuery, filterValue)
 }
 
 func (s *PlayerService) GetPlayer(id uuid.UUID) (*model.Player, error) {

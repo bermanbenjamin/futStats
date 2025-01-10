@@ -29,13 +29,20 @@ func (r *PlayerRepository) GetPlayerById(id uuid.UUID) (*model.Player, error) {
 	return &player, nil
 }
 
-func (r *PlayerRepository) GetAllPlayers() ([]model.Player, error) {
-	var players []model.Player
-	if err := r.DB.Find(&players).Error; err != nil {
-		log.Printf("Error retrieving all players: %v", err)
-		return nil, err
-	}
-	return players, nil
+func (r *PlayerRepository) GetAllPlayersBy(filterQuery string, filterValue string) ([]*model.Player, error) {
+	var players []*model.Player
+    if filterQuery!= "" && filterValue!= "" {
+        if err := r.DB.Where(filterQuery+" LIKE?", "%"+filterValue+"%").Find(&players).Error; err!= nil {
+            log.Printf("Error retrieving players with filter %s='%s': %v", filterQuery, filterValue, err)
+            return nil, err
+        }
+    } else {
+        if err := r.DB.Find(&players).Error; err!= nil {
+            log.Printf("Error retrieving all players: %v", err)
+            return nil, err
+        }
+    }
+    return players, nil
 }
 
 func (r *PlayerRepository) AddPlayer(player model.Player) (*model.Player, error) {

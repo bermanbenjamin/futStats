@@ -19,7 +19,9 @@ func NewPlayerHandler(service *service.PlayerService) *PlayerHandler {
 }
 
 func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
-	players, err := h.service.GetAllPlayers()
+	filterQuery := ctx.GetHeader("x-api-query-filter")
+	filterValue := ctx.GetHeader("x-api-query-value")
+	players, err := h.service.GetAllPlayers(filterQuery, filterValue)
 
 	if err != nil {
 		log.Printf("Error getting all players: %v", err)
