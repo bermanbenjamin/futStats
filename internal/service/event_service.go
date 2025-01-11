@@ -26,8 +26,9 @@ func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]model.Event
 }
 
 func (s *EventService) CreateEvent(event *model.Event) (*model.Event, error) {
-	player, err := s.playerService.GetPlayer(event.PlayerId)
-    if err != nil {
+	player, err := s.playerService.UpdatePlayerByEvent(*event)
+
+	if err != nil {
         return nil, err
     }
 
@@ -39,4 +40,25 @@ func (s *EventService) CreateEvent(event *model.Event) (*model.Event, error) {
     }
 
     return newEvent, nil
+}
+
+func (s *EventService) UpdateEvent(event model.Event) (*model.Event, error) {
+	updatedEvent, err := s.repo.UpdateEvent(&event)
+    if err != nil {
+        return nil, err
+    }
+
+    player, err := s.playerService.UpdatePlayerByEvent(event)
+
+    if err != nil {
+        return nil, err
+    }
+
+    updatedEvent.Player = *player
+
+    return updatedEvent, nil
+}
+
+func (s *EventService) DeleteEvent(id uuid.UUID) error {
+    return s.repo.DeleteEvent(id)
 }

@@ -11,14 +11,13 @@ import (
 
 type EventsHandler struct {
 	service *service.EventService
-	playerService *service.PlayerService
 }
 
 func NewEventsHandler(service *service.EventService, playerService *service.PlayerService) *EventsHandler {
-    return &EventsHandler{service: service, playerService: playerService}
+    return &EventsHandler{service: service}
 }
 
-func (h *EventsHandler) GetEventsByPlayerId(c *gin.Context) {
+func (h *EventsHandler) GetEventsByPlayerIdHandler(c *gin.Context) {
 	idStr := c.Param("playerId")
     playerId, err := uuid.Parse(idStr)
     if err!= nil {
@@ -26,7 +25,7 @@ func (h *EventsHandler) GetEventsByPlayerId(c *gin.Context) {
         return
     }
 
-    events, err := h.service.GetAllEventsByPlayerId(playerId)
+    events, err := h.service.GetAllEventsByPlayerIdHandler(playerId)
     if err!= nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve events"})
         return
@@ -48,12 +47,38 @@ func (h *EventsHandler) CreateEventsHandler(c *gin.Context) {
         return
     }
 
-	player, err := h.playerService.UpdatePlayerByEvent(event)
+    c.JSON(http.StatusCreated, gin.H{"data": newEvent,})
+}
 
-    if err!= nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update player's stats"})
+func (h *EventsHandler) UpdateEventsHandler(c *gin.Context) {
+    var event model.Event
+    if err := c.ShouldBindJSON(&event); err!= nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
         return
     }
 
-    c.JSON(http.StatusCreated, gin.H{"event": newEvent, "player": player})
+    updatedEvent, err := h.service.UpdateEvent(event)
+
+    if err!= nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update event"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"data": updatedEvent})
+}
+
+func (h *EventsHandler) DeleteEventHandler(c *gin.Context) {
+    idStr := c.Param("id")
+    id, err := uuid.Parse(idStr)
+
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event ID format"})
+        return
+    }
+
+    if err := h.service.DeleteEvent(id); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete event"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Event deleted successfully"})
 }
