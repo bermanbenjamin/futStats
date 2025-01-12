@@ -13,5 +13,15 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 		api.POST("/players", dependencies.PlayerHandler.CreatePlayer)
 		api.PUT("/players", dependencies.PlayerHandler.UpdatePlayer)
 		api.DELETE("/players/:id", dependencies.PlayerHandler.DeletePlayerById)
+
+		api.GET("/events/:id", dependencies.EventHandler.GetEventByPlayerId)
+		api.POST("/events", dependencies.EventHandler.CreateEvent)
+		api.PUT("/events", dependencies.EventHandler.UpdateEvent)
+		api.DELETE("/events/:id", dependencies.EventHandler.DeleteEvent)
+
 	}
+
+
+
+
 }

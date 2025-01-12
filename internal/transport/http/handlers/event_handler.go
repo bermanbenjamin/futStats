@@ -13,11 +13,11 @@ type EventsHandler struct {
 	service *service.EventService
 }
 
-func NewEventsHandler(service *service.EventService, playerService *service.PlayerService) *EventsHandler {
+func NewEventsHandler(service *service.EventService) *EventsHandler {
     return &EventsHandler{service: service}
 }
 
-func (h *EventsHandler) GetEventsByPlayerIdHandler(c *gin.Context) {
+func (h *EventsHandler) GetEventByPlayerId(c *gin.Context) {
 	idStr := c.Param("playerId")
     playerId, err := uuid.Parse(idStr)
     if err!= nil {
@@ -34,7 +34,7 @@ func (h *EventsHandler) GetEventsByPlayerIdHandler(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{"data": events})
 }
 
-func (h *EventsHandler) CreateEventsHandler(c *gin.Context) {
+func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	var event model.Event
     if err := c.ShouldBindJSON(&event); err!= nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
@@ -50,7 +50,7 @@ func (h *EventsHandler) CreateEventsHandler(c *gin.Context) {
     c.JSON(http.StatusCreated, gin.H{"data": newEvent,})
 }
 
-func (h *EventsHandler) UpdateEventsHandler(c *gin.Context) {
+func (h *EventsHandler) UpdateEvent(c *gin.Context) {
     var event model.Event
     if err := c.ShouldBindJSON(&event); err!= nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
@@ -66,7 +66,7 @@ func (h *EventsHandler) UpdateEventsHandler(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{"data": updatedEvent})
 }
 
-func (h *EventsHandler) DeleteEventHandler(c *gin.Context) {
+func (h *EventsHandler) DeleteEvent(c *gin.Context) {
     idStr := c.Param("id")
     id, err := uuid.Parse(idStr)
 
