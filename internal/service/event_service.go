@@ -15,6 +15,10 @@ func NewEventService(repo *repository.EventsRepository, playerService *PlayerSer
     return &EventService{repo: repo, playerService: playerService}
 }
 
+func (s *EventService) GetEventById(id uuid.UUID) (*model.Event, error){
+	return s.repo.GetEventById(id)
+}
+
 func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]model.Event, error) {
 	events, err := s.repo.GetEventsByPlayerId(playerId)
 
@@ -26,7 +30,7 @@ func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]model.Event
 }
 
 func (s *EventService) CreateEvent(event *model.Event) (*model.Event, error) {
-	player, err := s.playerService.UpdatePlayerByEvent(*event)
+	player, err := s.playerService.UpdatePlayerByEvent(*event, true)
 
 	if err != nil {
         return nil, err
@@ -48,17 +52,28 @@ func (s *EventService) UpdateEvent(event model.Event) (*model.Event, error) {
         return nil, err
     }
 
-    player, err := s.playerService.UpdatePlayerByEvent(event)
-
     if err != nil {
         return nil, err
     }
-
-    updatedEvent.Player = *player
 
     return updatedEvent, nil
 }
 
 func (s *EventService) DeleteEvent(id uuid.UUID) error {
+	event, err := s.GetEventById(id)
+	if err!= nil {
+        return err
+    }
+
+    if event == nil {
+        return nil
+    }
+
+	_, err = s.playerService.UpdatePlayerByEvent(*event, false)
+
+	if err != nil {
+		return err
+	}
+
     return s.repo.DeleteEvent(id)
 }

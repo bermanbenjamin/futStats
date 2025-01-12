@@ -25,7 +25,7 @@ func (h *EventsHandler) GetEventsByPlayerIdHandler(c *gin.Context) {
         return
     }
 
-    events, err := h.service.GetAllEventsByPlayerIdHandler(playerId)
+    events, err := h.service.GetAllEventsByPlayerId(playerId)
     if err!= nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve events"})
         return

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	model "github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/models/enums"
 	"github.com/bermanbenjamin/futStats/internal/repository"
@@ -35,20 +37,36 @@ func (s *PlayerService) DeletePlayer(id uuid.UUID) error {
 	return s.repo.DeletePlayer(id)
 }
 
-func (s *PlayerService) UpdatePlayerByEvent(event model.Event) (*model.Player, error) {
+func (s *PlayerService) UpdatePlayerByEvent(event model.Event, isCreateEvent bool) (*model.Player, error) {
 	player := event.Player
 
 	switch event.Type {
-		case enums.Goal:
-            player.Goals++
-        case enums.Assist:
-            player.Assists++
-        case enums.Dribble:
-            player.Dribbles++
-        case enums.Disarm:
-            player.Disarms++
-        default:
-            return nil, nil // Invalid event type, do nothing with the player's stats.
+		case enums.Assist:
+            if isCreateEvent {
+                player.Assists++
+            } else {
+                player.Assists--
+            }
+		case enums.Disarm:
+			if isCreateEvent { 
+				player.Disarms++
+			} else {
+				player.Disarms--
+			}
+		case enums.Dribble:
+			if isCreateEvent {
+                player.Dribbles++
+            } else {
+                player.Dribbles--
+            }
+        case enums.Goal: 
+		    if isCreateEvent {
+				player.Matches++
+			} else {
+				player.Matches--
+			}
+		default: return nil, errors.New("Unknown event type for event " + event.Type)
+        
 	}
 
     return s.repo.UpdatePlayer(player)

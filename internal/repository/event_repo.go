@@ -17,6 +17,15 @@ func NewEventsRepository(db *gorm.DB) *EventsRepository {
     return &EventsRepository{db: db}
 }
 
+func (r *EventsRepository) GetEventById(id uuid.UUID) (*model.Event, error) {
+    var event model.Event
+    if err := r.db.Preload("Player").Preload("Assistent").Preload("Match").Where("id = ?", id).First(&event).Error; err!= nil {
+        log.Printf("Error getting event with ID %v: %v", id, err)
+        return nil, err
+    }
+    return &event, nil
+}
+
 func (r *EventsRepository) GetEventsByPlayerId(playerId uuid.UUID) ([]model.Event, error) {
 
 	var events []model.Event = make([]model.Event, 0)
