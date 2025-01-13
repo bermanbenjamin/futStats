@@ -18,7 +18,7 @@ func NewEventsHandler(service *service.EventService) *EventsHandler {
 }
 
 func (h *EventsHandler) GetEventByPlayerId(c *gin.Context) {
-	idStr := c.Param("playerId")
+	idStr := c.Param("id")
     playerId, err := uuid.Parse(idStr)
     if err!= nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid player ID format"})
@@ -26,7 +26,7 @@ func (h *EventsHandler) GetEventByPlayerId(c *gin.Context) {
     }
 
     events, err := h.service.GetAllEventsByPlayerId(playerId)
-    if err!= nil {
+    if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve events"})
         return
     }

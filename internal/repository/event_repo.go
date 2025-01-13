@@ -28,13 +28,15 @@ func (r *EventsRepository) GetEventById(id uuid.UUID) (*model.Event, error) {
 
 func (r *EventsRepository) GetEventsByPlayerId(playerId uuid.UUID) ([]model.Event, error) {
 
-	var events []model.Event = make([]model.Event, 0)
-	if result := r.db.Preload("Player").Preload("Assistent").Preload("Match").Where("player_id = ?", playerId).Find(&events); result != nil {
+	var events []model.Event
+	if result := r.db.Preload("Player").Preload("Assistent").Preload("Match").Where("player_id = ?", playerId).Find(&events); result.Error != nil {
 		log.Printf("Error getting events for player with ID %v: %v", playerId, result.Error)
-        return nil, errors.New("Could not find events for player with ID: " + playerId.String())
-    }
+		return nil, errors.New("Could not find events for player with ID: " + playerId.String())
+	}
+
 	return events, nil
 }
+
 
 func (r *EventsRepository) CreateEvent(event *model.Event) (createdEvent *model.Event, err error) { 
     if err := r.db.Create(event).Error; err != nil {
