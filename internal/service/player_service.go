@@ -6,6 +6,7 @@ import (
 	model "github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/models/enums"
 	"github.com/bermanbenjamin/futStats/internal/repository"
+	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
 	"github.com/google/uuid"
 )
 
@@ -17,12 +18,12 @@ func NewPlayerService(repo *repository.PlayerRepository) *PlayerService {
 	return &PlayerService{repo: repo}
 }
 
-func (s *PlayerService) GetAllPlayers(filterQuery string, filterValue string) ([]*model.Player, error) {
+func (s *PlayerService) GetAllPlayers(filterQuery constants.QueryFilter, filterValue string) ([]*model.Player, error) {
 	return s.repo.GetAllPlayersBy(filterQuery, filterValue)
 }
 
-func (s *PlayerService) GetPlayer(id uuid.UUID) (*model.Player, error) {
-	return s.repo.GetPlayerById(id)
+func (s *PlayerService) GetPlayerBy(filter constants.QueryFilter, value string) (*model.Player, error) {
+	return s.repo.GetPlayerBy(filter, value)
 }
 
 func (s *PlayerService) CreatePlayer(player *model.Player) (*model.Player, error) {

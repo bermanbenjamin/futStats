@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"log"
@@ -6,6 +6,7 @@ import (
 
 	model "github.com/bermanbenjamin/futStats/internal/models"
 	services "github.com/bermanbenjamin/futStats/internal/service"
+	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -19,8 +20,14 @@ func NewPlayerHandler(service *services.PlayerService) *PlayerHandler {
 }
 
 func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
-	filterQuery := ctx.GetHeader("x-api-query-filter")
 	filterValue := ctx.GetHeader("x-api-query-value")
+	filterQuery := constants.QueryFilter(ctx.GetHeader("x-api-query-filter"))
+
+	if filterQuery == "" || filterValue == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missing filter query or value"})
+		return
+	}
+
 	players, err := h.service.GetAllPlayers(filterQuery, filterValue)
 
 	if err != nil {
@@ -39,15 +46,9 @@ func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
 }
 
 func (h *PlayerHandler) GetPlayer(ctx *gin.Context) {
-	idStr := ctx.Param("id")
-	id, err := uuid.Parse(idStr)
-	if err != nil {
-		log.Printf("Invalid player ID format: %v", err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id format"})
-		return
-	}
+	id := ctx.Param("id")
 
-	player, err := h.service.GetPlayer(id)
+	player, err := h.service.GetPlayerBy(constants.ID, id)
 	if err != nil {
 		log.Printf("Error getting player with ID %v: %v", id, err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get player"})

@@ -1,10 +1,13 @@
-package http
+package constants
+
+type QueryFilter string
 
 const (
-	ID = "id" 
-	PLAYERID = "player_id"
-	MATCHID = "match_id"
-	ASSISTENTID = "assistent_id"
-	POSITION = "position"
-	EVENTID = "event_id"
+	ID          QueryFilter = "id"
+	EMAIL       QueryFilter = "email"
+	PLAYERID    QueryFilter = "player_id"
+	MATCHID     QueryFilter = "match_id"
+	ASSISTENTID QueryFilter = "assistent_id"
+	POSITION    QueryFilter = "position"
+	EVENTID     QueryFilter = "event_id"
 )

@@ -5,7 +5,7 @@ import (
 
 	"github.com/bermanbenjamin/futStats/internal/config"
 	"github.com/bermanbenjamin/futStats/internal/config/db"
-	"github.com/bermanbenjamin/futStats/internal/transport/http"
+	routers "github.com/bermanbenjamin/futStats/internal/transport/http"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -29,7 +29,7 @@ func main() {
 	config.AllowAllOrigins = true
 	g.Use(cors.New(config))
 
-	http.SetupRouter(g, dep)
+	routers.SetupRouter(g, dep)
 
 	log.Printf("Starting server on %s...", cfg.ServerAddress)
 	if err := g.Run(":" + cfg.ServerAddress); err != nil {

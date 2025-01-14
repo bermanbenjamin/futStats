@@ -14,6 +14,8 @@ type Dependencies struct {
 	EventRepository  *repository.EventsRepository
 	EventService     *services.EventService
 	EventHandler     *handler.EventsHandler
+	AuthHandler      *handler.AuthHandler
+	AuthService      *services.AuthService
 }
 
 // InitializeDependencies sets up all dependencies like repositories, services, and handlers
@@ -25,10 +27,12 @@ func InitializeDependencies(db *gorm.DB) *Dependencies {
 	// Initialize services
 	playerService := services.NewPlayerService(playerRepo)
 	eventService := services.NewEventService(eventRepo, playerService)
+	authService := services.NewAuthService(playerService)
 
 	// Initialize HTTP handlers
 	playerHandler := handler.NewPlayerHandler(playerService)
 	eventHandler := handler.NewEventsHandler(eventService)
+	authHandler := handler.NewAuthHandler(authService)
 
 	// Return a struct containing all dependencies
 	return &Dependencies{
@@ -38,5 +42,7 @@ func InitializeDependencies(db *gorm.DB) *Dependencies {
 		EventRepository:  eventRepo,
 		EventService:     eventService,
 		EventHandler:     eventHandler,
+		AuthHandler:      authHandler,
+		AuthService:      authService,
 	}
 }
