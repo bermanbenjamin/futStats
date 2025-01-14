@@ -5,16 +5,16 @@ import (
 	"net/http"
 
 	model "github.com/bermanbenjamin/futStats/internal/models"
-	"github.com/bermanbenjamin/futStats/internal/service"
+	services "github.com/bermanbenjamin/futStats/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 type PlayerHandler struct {
-	service *service.PlayerService
+	service *services.PlayerService
 }
 
-func NewPlayerHandler(service *service.PlayerService) *PlayerHandler {
+func NewPlayerHandler(service *services.PlayerService) *PlayerHandler {
 	return &PlayerHandler{service: service}
 }
 
@@ -35,7 +35,7 @@ func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": players, "total": len(players)} )
+	ctx.JSON(http.StatusOK, gin.H{"data": players, "total": len(players)})
 }
 
 func (h *PlayerHandler) GetPlayer(ctx *gin.Context) {

@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
 	"errors"
@@ -41,33 +41,34 @@ func (s *PlayerService) UpdatePlayerByEvent(event model.Event, isCreateEvent boo
 	player := event.Player
 
 	switch event.Type {
-		case enums.Assist:
-            if isCreateEvent {
-                player.Assists++
-            } else {
-                player.Assists--
-            }
-		case enums.Disarm:
-			if isCreateEvent { 
-				player.Disarms++
-			} else {
-				player.Disarms--
-			}
-		case enums.Dribble:
-			if isCreateEvent {
-                player.Dribbles++
-            } else {
-                player.Dribbles--
-            }
-        case enums.Goal: 
-		    if isCreateEvent {
-				player.Matches++
-			} else {
-				player.Matches--
-			}
-		default: return nil, errors.New("Unknown event type for event " + event.Type)
-        
+	case enums.Assist:
+		if isCreateEvent {
+			player.Assists++
+		} else {
+			player.Assists--
+		}
+	case enums.Disarm:
+		if isCreateEvent {
+			player.Disarms++
+		} else {
+			player.Disarms--
+		}
+	case enums.Dribble:
+		if isCreateEvent {
+			player.Dribbles++
+		} else {
+			player.Dribbles--
+		}
+	case enums.Goal:
+		if isCreateEvent {
+			player.Matches++
+		} else {
+			player.Matches--
+		}
+	default:
+		return nil, errors.New("Unknown event type for event " + event.Type)
+
 	}
 
-    return s.repo.UpdatePlayer(player)
+	return s.repo.UpdatePlayer(player)
 }

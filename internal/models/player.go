@@ -2,6 +2,8 @@ package model
 
 type Player struct {
 	Base
+	Email       string `json:"email"`
+	Password    string `json:"-"`
 	Name        string `json:"name"`
 	Goals       int    `json:"goals"`
 	Assists     int    `json:"assists"`

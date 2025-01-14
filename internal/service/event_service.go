@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
 	model "github.com/bermanbenjamin/futStats/internal/models"
@@ -6,16 +6,16 @@ import (
 	"github.com/google/uuid"
 )
 
-type EventService struct { 
-	repo *repository.EventsRepository
-	playerService *PlayerService 
+type EventService struct {
+	repo          *repository.EventsRepository
+	playerService *PlayerService
 }
 
 func NewEventService(repo *repository.EventsRepository, playerService *PlayerService) *EventService {
-    return &EventService{repo: repo, playerService: playerService}
+	return &EventService{repo: repo, playerService: playerService}
 }
 
-func (s *EventService) GetEventById(id uuid.UUID) (*model.Event, error){
+func (s *EventService) GetEventById(id uuid.UUID) (*model.Event, error) {
 	return s.repo.GetEventById(id)
 }
 
@@ -25,7 +25,7 @@ func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]model.Event
 	if err != nil {
 		return nil, err
 	}
-    
+
 	return events, nil
 }
 
@@ -33,41 +33,41 @@ func (s *EventService) CreateEvent(event *model.Event) (*model.Event, error) {
 	player, err := s.playerService.UpdatePlayerByEvent(*event, true)
 
 	if err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
 	event.Player = *player
 
-    newEvent, err := s.repo.CreateEvent(event)
-    if err != nil {
-        return nil, err
-    }
+	newEvent, err := s.repo.CreateEvent(event)
+	if err != nil {
+		return nil, err
+	}
 
-    return newEvent, nil
+	return newEvent, nil
 }
 
 func (s *EventService) UpdateEvent(event model.Event) (*model.Event, error) {
 	updatedEvent, err := s.repo.UpdateEvent(&event)
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    return updatedEvent, nil
+	return updatedEvent, nil
 }
 
 func (s *EventService) DeleteEvent(id uuid.UUID) error {
 	event, err := s.GetEventById(id)
-	if err!= nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    if event == nil {
-        return nil
-    }
+	if event == nil {
+		return nil
+	}
 
 	_, err = s.playerService.UpdatePlayerByEvent(*event, false)
 
@@ -75,5 +75,5 @@ func (s *EventService) DeleteEvent(id uuid.UUID) error {
 		return err
 	}
 
-    return s.repo.DeleteEvent(id)
+	return s.repo.DeleteEvent(id)
 }
