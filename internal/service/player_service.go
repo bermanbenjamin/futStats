@@ -3,7 +3,7 @@ package services
 import (
 	"errors"
 
-	model "github.com/bermanbenjamin/futStats/internal/models"
+	"github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/models/enums"
 	"github.com/bermanbenjamin/futStats/internal/repository"
 	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
@@ -18,19 +18,19 @@ func NewPlayerService(repo *repository.PlayerRepository) *PlayerService {
 	return &PlayerService{repo: repo}
 }
 
-func (s *PlayerService) GetAllPlayers(filterQuery constants.QueryFilter, filterValue string) ([]*model.Player, error) {
+func (s *PlayerService) GetAllPlayers(filterQuery constants.QueryFilter, filterValue string) ([]*models.Player, error) {
 	return s.repo.GetAllPlayersBy(filterQuery, filterValue)
 }
 
-func (s *PlayerService) GetPlayerBy(filter constants.QueryFilter, value string) (*model.Player, error) {
+func (s *PlayerService) GetPlayerBy(filter constants.QueryFilter, value string) (*models.Player, error) {
 	return s.repo.GetPlayerBy(filter, value)
 }
 
-func (s *PlayerService) CreatePlayer(player *model.Player) (*model.Player, error) {
+func (s *PlayerService) CreatePlayer(player *models.Player) (*models.Player, error) {
 	return s.repo.AddPlayer(*player)
 }
 
-func (s *PlayerService) UpdatePlayer(player *model.Player) (*model.Player, error) {
+func (s *PlayerService) UpdatePlayer(player *models.Player) (*models.Player, error) {
 	return s.repo.UpdatePlayer(*player)
 }
 
@@ -38,7 +38,7 @@ func (s *PlayerService) DeletePlayer(id uuid.UUID) error {
 	return s.repo.DeletePlayer(id)
 }
 
-func (s *PlayerService) UpdatePlayerByEvent(event model.Event, isCreateEvent bool) (*model.Player, error) {
+func (s *PlayerService) UpdatePlayerByEvent(event models.Event, isCreateEvent bool) (*models.Player, error) {
 	player := event.Player
 
 	switch event.Type {

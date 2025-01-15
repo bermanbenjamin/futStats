@@ -1,7 +1,7 @@
 package services
 
 import (
-	model "github.com/bermanbenjamin/futStats/internal/models"
+	"github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/repository"
 	"github.com/google/uuid"
 )
@@ -15,11 +15,11 @@ func NewEventService(repo *repository.EventsRepository, playerService *PlayerSer
 	return &EventService{repo: repo, playerService: playerService}
 }
 
-func (s *EventService) GetEventById(id uuid.UUID) (*model.Event, error) {
+func (s *EventService) GetEventById(id uuid.UUID) (*models.Event, error) {
 	return s.repo.GetEventById(id)
 }
 
-func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]model.Event, error) {
+func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]models.Event, error) {
 	events, err := s.repo.GetEventsByPlayerId(playerId)
 
 	if err != nil {
@@ -29,7 +29,7 @@ func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]model.Event
 	return events, nil
 }
 
-func (s *EventService) CreateEvent(event *model.Event) (*model.Event, error) {
+func (s *EventService) CreateEvent(event *models.Event) (*models.Event, error) {
 	player, err := s.playerService.UpdatePlayerByEvent(*event, true)
 
 	if err != nil {
@@ -46,7 +46,7 @@ func (s *EventService) CreateEvent(event *model.Event) (*model.Event, error) {
 	return newEvent, nil
 }
 
-func (s *EventService) UpdateEvent(event model.Event) (*model.Event, error) {
+func (s *EventService) UpdateEvent(event models.Event) (*models.Event, error) {
 	updatedEvent, err := s.repo.UpdateEvent(&event)
 	if err != nil {
 		return nil, err

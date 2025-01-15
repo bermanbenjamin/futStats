@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	model "github.com/bermanbenjamin/futStats/internal/models"
+	"github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
 	"github.com/bermanbenjamin/futStats/internal/transport/http/requests"
 	"github.com/golang-jwt/jwt/v5"
@@ -28,7 +28,7 @@ func NewAuthService(playerService *PlayerService) *AuthService {
 	return &AuthService{playerService: playerService}
 }
 
-func (s *AuthService) Login(email string, password string) (player *model.Player, token string, err error) {
+func (s *AuthService) Login(email string, password string) (player *models.Player, token string, err error) {
 	player, err = s.playerService.GetPlayerBy(constants.EMAIL, email)
 
 	if err != nil {
@@ -50,13 +50,13 @@ func (s *AuthService) Login(email string, password string) (player *model.Player
 	return player, token, nil
 }
 
-func (s *AuthService) SignUp(request *requests.SignInRequest) (player *model.Player, token string, err error) {
+func (s *AuthService) SignUp(request *requests.SignInRequest) (player *models.Player, token string, err error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, "", err
 	}
 
-	player = &model.Player{
+	player = &models.Player{
 		Email:    request.Email,
 		Password: string(hashedPassword),
 		Age:      request.Age,

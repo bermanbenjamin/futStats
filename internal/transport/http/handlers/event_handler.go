@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	model "github.com/bermanbenjamin/futStats/internal/models"
+	"github.com/bermanbenjamin/futStats/internal/models"
 	services "github.com/bermanbenjamin/futStats/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -35,7 +35,7 @@ func (h *EventsHandler) GetEventByPlayerId(c *gin.Context) {
 }
 
 func (h *EventsHandler) CreateEvent(c *gin.Context) {
-	var event model.Event
+	var event models.Event
 	if err := c.ShouldBindJSON(&event); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
@@ -51,7 +51,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 }
 
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
-	var event model.Event
+	var event models.Event
 	if err := c.ShouldBindJSON(&event); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return

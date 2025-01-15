@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	model "github.com/bermanbenjamin/futStats/internal/models"
+	"github.com/bermanbenjamin/futStats/internal/models"
 	services "github.com/bermanbenjamin/futStats/internal/service"
 	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
 	"github.com/gin-gonic/gin"
@@ -60,7 +60,7 @@ func (h *PlayerHandler) GetPlayer(ctx *gin.Context) {
 }
 
 func (h *PlayerHandler) CreatePlayer(ctx *gin.Context) {
-	var player *model.Player
+	var player *models.Player
 	if err := ctx.ShouldBindJSON(&player); err != nil {
 		log.Printf("Error binding player data: %v", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid player data"})
@@ -87,7 +87,7 @@ func (h *PlayerHandler) UpdatePlayer(ctx *gin.Context) {
 		return
 	}
 
-	var player model.Player
+	var player models.Player
 	if err := ctx.ShouldBindJSON(&player); err != nil {
 		log.Printf("Error binding player data: %v", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid player data"})

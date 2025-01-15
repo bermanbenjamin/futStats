@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	model "github.com/bermanbenjamin/futStats/internal/models"
+	"github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -17,8 +17,8 @@ type PlayerRepository struct {
 func NewPlayerRepository(db *gorm.DB) *PlayerRepository {
 	return &PlayerRepository{DB: db}
 }
-func (r *PlayerRepository) GetPlayerBy(filter constants.QueryFilter, value string) (*model.Player, error) {
-	var player model.Player
+func (r *PlayerRepository) GetPlayerBy(filter constants.QueryFilter, value string) (*models.Player, error) {
+	var player models.Player
 	query := fmt.Sprintf("%s = ?", filter)
 	if err := r.DB.Where(query, value).First(&player).Error; err != nil {
 		log.Printf("Error retrieving player with filter %s='%s': %v", filter, value, err)
@@ -27,8 +27,8 @@ func (r *PlayerRepository) GetPlayerBy(filter constants.QueryFilter, value strin
 	return &player, nil
 }
 
-func (r *PlayerRepository) GetAllPlayersBy(filterQuery constants.QueryFilter, filterValue string) ([]*model.Player, error) {
-	var players []*model.Player
+func (r *PlayerRepository) GetAllPlayersBy(filterQuery constants.QueryFilter, filterValue string) ([]*models.Player, error) {
+	var players []*models.Player
 	if filterQuery != "" && filterValue != "" {
 		if err := r.DB.Where(filterQuery+" LIKE?", "%"+filterValue+"%").Find(&players).Error; err != nil {
 			log.Printf("Error retrieving players with filter %s='%s': %v", filterQuery, filterValue, err)
@@ -43,7 +43,7 @@ func (r *PlayerRepository) GetAllPlayersBy(filterQuery constants.QueryFilter, fi
 	return players, nil
 }
 
-func (r *PlayerRepository) AddPlayer(player model.Player) (*model.Player, error) {
+func (r *PlayerRepository) AddPlayer(player models.Player) (*models.Player, error) {
 	if err := r.DB.Create(&player).Error; err != nil {
 		log.Printf("Error adding player: %v", err)
 		return nil, err
@@ -51,7 +51,7 @@ func (r *PlayerRepository) AddPlayer(player model.Player) (*model.Player, error)
 	return &player, nil
 }
 
-func (r *PlayerRepository) UpdatePlayer(player model.Player) (*model.Player, error) {
+func (r *PlayerRepository) UpdatePlayer(player models.Player) (*models.Player, error) {
 	if err := r.DB.Save(&player).Error; err != nil {
 		log.Printf("Error updating player with ID %s: %v", player.ID, err)
 		return nil, err
@@ -60,7 +60,7 @@ func (r *PlayerRepository) UpdatePlayer(player model.Player) (*model.Player, err
 }
 
 func (r *PlayerRepository) DeletePlayer(id uuid.UUID) error {
-	if err := r.DB.Where("id = ?", id.String()).Delete(&model.Player{}).Error; err != nil {
+	if err := r.DB.Where("id = ?", id.String()).Delete(&models.Player{}).Error; err != nil {
 		log.Printf("Error deleting player with ID %d: %v", id, err)
 		return err
 	}
