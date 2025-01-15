@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"log"
 	"os"
 	"time"
 
@@ -30,11 +31,13 @@ func NewAuthService(playerService *PlayerService) *AuthService {
 func (s *AuthService) Login(email string, password string) (player *model.Player, token string, err error) {
 	player, err = s.playerService.GetPlayerBy(constants.EMAIL, email)
 
-	if err != nil || player == nil {
-		return nil, "", errors.New("invalid email")
+	if err != nil {
+		log.Printf("error getting player from server")
+		return nil, "", errors.New("error getting player from server with this email: " + email)
 	}
 
 	if err := checkPassword(password, player.Password); err != nil {
+		log.Printf("error checking password")
 		return nil, "", errors.New("invalid password")
 	}
 
@@ -107,7 +110,7 @@ func (s *AuthService) Logout(tokenString string) (string, error) {
 }
 
 func checkPassword(password string, hash string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(hash))
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err
 }
 
@@ -124,7 +127,8 @@ func createToken(username string) (string, error) {
 
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		return "", err
+		log.Printf("error signing token: %v", err)
+		return "", errors.New("failed to signed token string")
 	}
 
 	return tokenString, nil

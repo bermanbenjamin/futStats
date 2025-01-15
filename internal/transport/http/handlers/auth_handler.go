@@ -9,8 +9,8 @@ import (
 )
 
 type Credentials struct {
-	Username string `json:"username" binding:"required" validate:"required, email"`
-	Password string `json:"password" binding:"required" validate:"required"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type AuthHandler struct {
@@ -30,7 +30,7 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 
 	player, token, err := h.authService.Login(credentials.Username, credentials.Password)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err})
 		return
 	}
 
