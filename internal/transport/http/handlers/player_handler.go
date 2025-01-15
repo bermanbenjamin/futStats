@@ -23,11 +23,6 @@ func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
 	filterValue := ctx.GetHeader("x-api-query-value")
 	filterQuery := constants.QueryFilter(ctx.GetHeader("x-api-query-filter"))
 
-	if filterQuery == "" || filterValue == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missing filter query or value"})
-		return
-	}
-
 	players, err := h.service.GetAllPlayers(filterQuery, filterValue)
 
 	if err != nil {
