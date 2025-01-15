@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	services "github.com/bermanbenjamin/futStats/internal/service"
-	handlers "github.com/bermanbenjamin/futStats/internal/transport/http/handlers/requests"
+	"github.com/bermanbenjamin/futStats/internal/transport/http/requests"
 	"github.com/gin-gonic/gin"
 )
 
@@ -60,13 +60,13 @@ func (h *AuthHandler) Logout(ctx *gin.Context) {
 }
 
 func (h *AuthHandler) SignUp(ctx *gin.Context) {
-	var request = handlers.SignInRequest{}
+	var request = requests.SignInRequest{}
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	player, token, err := h.authService.SignUp(request.Username, request.Password)
+	player, token, err := h.authService.SignUp(&request)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to sign in"})
 		return

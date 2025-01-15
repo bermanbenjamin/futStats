@@ -7,6 +7,7 @@ import (
 
 	model "github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
+	"github.com/bermanbenjamin/futStats/internal/transport/http/requests"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -46,15 +47,17 @@ func (s *AuthService) Login(email string, password string) (player *model.Player
 	return player, token, nil
 }
 
-func (s *AuthService) SignUp(email string, password string) (player *model.Player, token string, err error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+func (s *AuthService) SignUp(request *requests.SignInRequest) (player *model.Player, token string, err error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, "", err
 	}
 
 	player = &model.Player{
-		Email:    email,
+		Email:    request.Email,
 		Password: string(hashedPassword),
+		Age:      request.Age,
+		Name:     request.Name,
 	}
 
 	player, err = s.playerService.CreatePlayer(player)
@@ -62,7 +65,7 @@ func (s *AuthService) SignUp(email string, password string) (player *model.Playe
 		return nil, "", err
 	}
 
-	token, err = createToken(email)
+	token, err = createToken(request.Name)
 
 	if err != nil {
 		return nil, "", err
