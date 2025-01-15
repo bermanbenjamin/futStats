@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/bermanbenjamin/futStats/internal/models"
-	services "github.com/bermanbenjamin/futStats/internal/service"
+	"github.com/bermanbenjamin/futStats/internal/services"
 	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

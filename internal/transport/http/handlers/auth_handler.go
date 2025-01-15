@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	services "github.com/bermanbenjamin/futStats/internal/service"
+	"github.com/bermanbenjamin/futStats/internal/services"
 	"github.com/bermanbenjamin/futStats/internal/transport/http/requests"
 	"github.com/gin-gonic/gin"
 )
