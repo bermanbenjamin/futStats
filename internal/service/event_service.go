@@ -52,10 +52,6 @@ func (s *EventService) UpdateEvent(event model.Event) (*model.Event, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
 	return updatedEvent, nil
 }
 

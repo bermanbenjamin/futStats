@@ -14,7 +14,7 @@ import (
 var secretKey = os.Getenv("SECRET_KEY")
 
 type Claims struct {
-	Username string `json:"username";`
+	Username string `json:"username"`
 	jwt.RegisteredClaims
 }
 

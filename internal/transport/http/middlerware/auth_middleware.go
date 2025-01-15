@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,8 +34,6 @@ func AuthMiddleware(ctx *gin.Context) {
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
 		return jwtKey, nil
 	})
-
-	log.Fatalf(token.Raw)
 
 	if err != nil || !token.Valid {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
