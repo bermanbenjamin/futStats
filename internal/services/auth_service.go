@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/bermanbenjamin/futStats/cmd/api/constants"
+	"github.com/bermanbenjamin/futStats/cmd/api/requests"
 	"github.com/bermanbenjamin/futStats/internal/models"
-	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
-	"github.com/bermanbenjamin/futStats/internal/transport/http/requests"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )

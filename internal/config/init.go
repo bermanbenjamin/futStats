@@ -1,40 +1,41 @@
 package config
 
 import (
+	"github.com/bermanbenjamin/futStats/cmd/api/handlers"
 	"github.com/bermanbenjamin/futStats/internal/repository"
-	services "github.com/bermanbenjamin/futStats/internal/service"
-	handler "github.com/bermanbenjamin/futStats/internal/transport/http/handlers"
+	"github.com/bermanbenjamin/futStats/internal/services"
 	"gorm.io/gorm"
 )
 
 type Dependencies struct {
 	PlayerRepository *repository.PlayerRepository
 	PlayerService    *services.PlayerService
-	PlayerHandler    *handler.PlayerHandler
+	PlayerHandler    *handlers.PlayerHandler
 	EventRepository  *repository.EventsRepository
 	EventService     *services.EventService
-	EventHandler     *handler.EventsHandler
-	AuthHandler      *handler.AuthHandler
+	EventHandler     *handlers.EventsHandler
+	AuthHandler      *handlers.AuthHandler
 	AuthService      *services.AuthService
+	LeagueRepository *repository.LeagueRepository
+	LeagueService    *services.LeagueService
+	LeagueHandler    *handlers.LeagueHandler
 }
 
-// InitializeDependencies sets up all dependencies like repositories, services, and handlers
 func InitializeDependencies(db *gorm.DB) *Dependencies {
-	// Initialize repositories
 	playerRepo := repository.NewPlayerRepository(db)
 	eventRepo := repository.NewEventsRepository(db)
+	leagueRepo := repository.NewLeagueRepository(db)
 
-	// Initialize services
 	playerService := services.NewPlayerService(playerRepo)
 	eventService := services.NewEventService(eventRepo, playerService)
 	authService := services.NewAuthService(playerService)
+	leagueService := services.NewLeagueService(leagueRepo, playerService)
 
-	// Initialize HTTP handlers
-	playerHandler := handler.NewPlayerHandler(playerService)
-	eventHandler := handler.NewEventsHandler(eventService)
-	authHandler := handler.NewAuthHandler(authService)
+	playerHandler := handlers.NewPlayerHandler(playerService)
+	eventHandler := handlers.NewEventsHandler(eventService)
+	authHandler := handlers.NewAuthHandler(authService)
+	leagueHandler := handlers.NewLeagueHandler(leagueService)
 
-	// Return a struct containing all dependencies
 	return &Dependencies{
 		PlayerRepository: playerRepo,
 		PlayerService:    playerService,
@@ -44,5 +45,8 @@ func InitializeDependencies(db *gorm.DB) *Dependencies {
 		EventHandler:     eventHandler,
 		AuthHandler:      authHandler,
 		AuthService:      authService,
+		LeagueRepository: leagueRepo,
+		LeagueService:    leagueService,
+		LeagueHandler:    leagueHandler,
 	}
 }

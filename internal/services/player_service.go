@@ -3,10 +3,10 @@ package services
 import (
 	"errors"
 
+	"github.com/bermanbenjamin/futStats/cmd/api/constants"
 	"github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/models/enums"
 	"github.com/bermanbenjamin/futStats/internal/repository"
-	"github.com/bermanbenjamin/futStats/internal/transport/http/constants"
 	"github.com/google/uuid"
 )
 
