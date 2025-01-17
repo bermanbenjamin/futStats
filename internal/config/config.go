@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 
@@ -46,7 +45,7 @@ func LoadConfig() (*Config, error) {
 	// Populate and return the config
 	config := &Config{
 		DatabaseUrl:   url,
-		ServerAddress: fmt.Sprintf(":%s", port), // Prepend ":" to match the Go server address format
+		ServerAddress: port, // Prepend ":" to match the Go server address format
 	}
 
 	log.Printf("Configuration loaded successfully: %+v", config)
