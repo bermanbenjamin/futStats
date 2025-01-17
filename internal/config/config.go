@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 
@@ -13,33 +14,41 @@ type Config struct {
 	ServerAddress string
 }
 
-// Define custom error types
-var ErrMissingEnvFile = errors.New("failed to load the .env file")
-var ErrEmptyDatabaseUrl = errors.New("DATABASE_URL is empty or invalid")
-var ErrMissingPort = errors.New("PORT not set in environment variables")
+// Define custom error types for better debugging
+var (
+	ErrMissingEnvFile    = errors.New("failed to load the .env file")
+	ErrEmptyDatabaseUrl  = errors.New("DATABASE_URL is empty or invalid")
+	ErrMissingPort       = errors.New("PORT not set in environment variables")
+	ErrInvalidPortFormat = errors.New("PORT must be a valid number")
+)
 
-func LoadConfig() (cfg *Config, err error) {
-	err = godotenv.Load(".env")
-	if err != nil {
-		log.Printf("Failed to read config file: %v", err)
-		return nil, ErrMissingEnvFile
+// LoadConfig loads environment variables and returns a populated Config struct
+func LoadConfig() (*Config, error) {
+	// Attempt to load the .env file, but do not fail if it doesn't exist
+	if err := godotenv.Load(".env"); err != nil {
+		log.Printf("Warning: .env file not found, relying on environment variables: %v", err)
 	}
 
+	// Retrieve DATABASE_URL from environment
 	url := os.Getenv("DATABASE_URL")
 	if url == "" {
-		log.Printf("DATABASE_URL is empty or invalid")
+		log.Printf("Error: DATABASE_URL is empty or invalid")
 		return nil, ErrEmptyDatabaseUrl
 	}
 
-	address := os.Getenv("PORT")
-	if address == "" {
+	// Retrieve PORT from environment
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Printf("Error: PORT not set in environment variables")
 		return nil, ErrMissingPort
 	}
 
-	cfg = &Config{
+	// Populate and return the config
+	config := &Config{
 		DatabaseUrl:   url,
-		ServerAddress: address,
+		ServerAddress: fmt.Sprintf(":%s", port), // Prepend ":" to match the Go server address format
 	}
 
-	return cfg, nil
+	log.Printf("Configuration loaded successfully: %+v", config)
+	return config, nil
 }
