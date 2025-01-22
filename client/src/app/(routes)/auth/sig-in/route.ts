@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { setCookie } from "cookies-next";
 
 type SignInResponse = {
   token: string;
@@ -14,5 +15,5 @@ export default async function signIn(email: string, password: string) {
 }
 
 function setupToken(data: SignInResponse) {
-  localStorage.setItem("token", data.token);
+  setCookie("token", data.token);
 }
