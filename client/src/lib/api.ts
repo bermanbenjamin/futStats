@@ -12,7 +12,7 @@ export const api = ky.create({
     beforeRequest: [
       async (request) => {
         const token = await getCookie("token");
-        if (token) {
+        if (token && !request.url.includes("auth")) {
           request.headers.set("Authorization", `Bearer ${token}`);
         }
       },
