@@ -6,11 +6,11 @@ export default async function signInService({
   password,
 }: SignInRequest): Promise<SignInResponse> {
   return await api
-    .post("api/auth/sign-in", {
+    .post("v1/auth/login", {
       json: {
-        email,
+        username: email,
         password,
       },
     })
-    .json<SignInResponse>();
+    .json();
 }

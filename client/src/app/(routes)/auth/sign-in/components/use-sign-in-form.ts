@@ -1,7 +1,8 @@
-import { useSignInService } from "@/app/http/auth/use-auth-service";
+import { useSignInService } from "@/http/auth/use-auth-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCookie } from "cookies-next";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const signInFormSchema = z.object({
@@ -23,6 +24,10 @@ export default function useSignInForm() {
   const { mutateAsync: signInService, isPending } = useSignInService({
     onSuccess: async (data) => {
       setCookie("token", data.token);
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(error.message);
     },
   });
 

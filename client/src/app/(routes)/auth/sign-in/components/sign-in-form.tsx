@@ -14,7 +14,7 @@ import Link from "next/link";
 import useSignInForm from "./use-sign-in-form";
 
 export default function SignInForm() {
-  const { form, onSubmit } = useSignInForm();
+  const { form, onSubmit, isPending } = useSignInForm();
 
   return (
     <div className="flex flex-col gap-5">
@@ -65,8 +65,7 @@ export default function SignInForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">
-            {/* {isPending && <Icons.loader className="animate-spin mr-2 size-4" />} */}
+          <Button type="submit" disabled={isPending}>
             Acessar
           </Button>
         </form>

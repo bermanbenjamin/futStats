@@ -38,6 +38,9 @@ importers:
       cookies-next:
         specifier: ^5.1.0
         version: 5.1.0(next@15.1.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
       ky-universal:
         specifier: ^0.12.0
         version: 0.12.0(ky@1.7.4)(web-streams-polyfill@3.3.3)
@@ -1000,6 +1003,10 @@ packages:
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
+
+  dotenv@16.4.7:
+    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
+    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -3033,6 +3040,8 @@ snapshots:
   doctrine@2.1.0:
     dependencies:
       esutils: 2.0.3
+
+  dotenv@16.4.7: {}
 
   dunder-proto@1.0.1:
     dependencies:
