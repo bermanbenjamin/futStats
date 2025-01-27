@@ -29,8 +29,9 @@ func main() {
 	config := cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
-		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowCredentials: true, // Permite cookies e cabeçalhos de autenticação
+		AllowOrigins:     []string{"http://localhost:3000", "https://your-production-domain.com"},
+		AllowCredentials: true,                        // Permite cookies e cabeçalhos de autenticação
+		ExposeHeaders:    []string{"X-Custom-Header"}, // Opcional: expõe cabeçalhos personalizados
 		MaxAge:           12 * time.Hour,
 	}
 	g.Use(cors.New(config))
