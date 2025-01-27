@@ -1,7 +1,9 @@
+import { Player } from "../types";
+
 export type SignInResponse = {
   token: string;
   expires: string;
-  user: object;
+  player: Player;
 };
 
 export type SignInRequest = {

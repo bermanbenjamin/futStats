@@ -1,5 +1,7 @@
 "use client";
 
+import { Icons } from "@/components/icons";
+import PasswordInput from "@/components/inputs/password-input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -58,7 +60,7 @@ export default function SignInForm() {
                 </div>
                 <div className="relative">
                   <FormControl>
-                    <Input placeholder="••••••••" {...field} />
+                    <PasswordInput placeholder="••••••••" {...field} />
                   </FormControl>
                 </div>
                 <FormMessage />
@@ -66,6 +68,7 @@ export default function SignInForm() {
             )}
           />
           <Button type="submit" disabled={isPending}>
+            {isPending && <Icons.loader className="animate-spin mr-2 size-4" />}
             Acessar
           </Button>
         </form>

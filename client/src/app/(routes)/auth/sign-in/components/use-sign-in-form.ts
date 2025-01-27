@@ -1,8 +1,10 @@
 import { useSignInService } from "@/http/auth/use-auth-service";
+import { appRoutes } from "@/lib/routes";
+import { useSessionStore } from "@/stores/session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
 const signInFormSchema = z.object({
@@ -21,13 +23,14 @@ export default function useSignInForm() {
     resolver: zodResolver(signInFormSchema),
   });
 
+  const router = useRouter();
+  const { setPlayer } = useSessionStore();
+
   const { mutateAsync: signInService, isPending } = useSignInService({
     onSuccess: async (data) => {
       setCookie("token", data.token);
-    },
-    onError: (error) => {
-      console.log(error);
-      toast.error(error.message);
+      setPlayer(data.player);
+      router.push(appRoutes.player.home(data.player.ID));
     },
   });
 
