@@ -36,7 +36,10 @@ import {
   Rotate3dIcon,
   Settings2,
   Settings2Icon,
+  Shield,
   ShieldAlertIcon,
+  ShieldEllipsis,
+  ShieldPlus,
   ShoppingBagIcon,
   ShoppingCart,
   SlashIcon,
@@ -97,4 +100,7 @@ export const Icons = {
   bell: BellIcon,
   sun: SunIcon,
   moon: MoonIcon,
+  shield: Shield,
+  shieldPlus: ShieldPlus,
+  shieldEllipsis: ShieldEllipsis,
 };

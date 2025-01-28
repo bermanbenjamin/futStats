@@ -11,7 +11,7 @@ export default function ProtectedLayout({
   return (
     <>
       <main className="min-h-screen w-full bg-white">
-        <section className="flex size-full">
+        <section className="flex size-full p-8">
           <AppSidebar />
           {children}
         </section>

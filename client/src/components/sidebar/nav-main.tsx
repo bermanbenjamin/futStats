@@ -4,7 +4,6 @@ import { Icons, type IconType } from "@/components/icons";
 import {
   GearIcon,
   HomeIcon,
-  LayersIcon,
   PeopleIcon,
   ReceiptIcon,
 } from "@/components/icons/dub";
@@ -23,7 +22,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { useParams } from "next/navigation";
+import { useSessionStore } from "@/stores/session-store";
 import { NavItem } from "./nav-item";
 
 export type NavItemsProps = {
@@ -36,29 +35,40 @@ export type NavItemsProps = {
 );
 
 export function NavMain() {
-  const { slug } = useParams() as { slug?: string };
+  const { player } = useSessionStore();
 
   const items: NavItemsProps[] = [
     {
       name: "Início",
       icon: HomeIcon,
-      href: `/${slug}`,
+      href: `/${player?.ID}`,
       exact: true,
     },
     {
-      name: "Estoque",
-      icon: Icons.bag,
+      name: "Ligas",
+      icon: Icons.shieldEllipsis,
       items: [
-        {
-          name: "Items",
-          icon: Icons.list,
-          href: `/${slug}/items`,
-        },
-        {
-          name: "Categorias",
-          icon: LayersIcon,
-          href: `/${slug}/categories`,
-        },
+        ...(player?.leagues?.map(
+          (league) => ({
+            name: league.name,
+            icon: Icons.shield,
+            href: `/${player?.ID}/leagues/${league.ID}`,
+            exact: true,
+          }),
+          {
+            name: "Criar Liga",
+            icon: Icons.shieldPlus,
+            href: `/${player?.ID}/leagues`,
+            exact: true,
+          }
+        ) || [
+          {
+            name: "Criar Liga",
+            icon: Icons.shieldPlus,
+            href: `/${player?.ID}/leagues`,
+            exact: true,
+          },
+        ]),
       ],
     },
     {
@@ -68,19 +78,19 @@ export function NavMain() {
         {
           name: "Geral",
           icon: GearIcon,
-          href: `/${slug}/settings`,
+          href: `/${player?.ID}/settings`,
           exact: true,
         },
         {
           name: "Cobrança",
           icon: ReceiptIcon,
-          href: `/${slug}/settings/billing`,
+          href: `/${player?.ID}/settings/billing`,
           exact: true,
         },
         {
           name: "Membros",
           icon: PeopleIcon,
-          href: `/${slug}/settings/members`,
+          href: `/${player?.ID}/settings/members`,
           exact: true,
         },
       ],
