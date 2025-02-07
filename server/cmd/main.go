@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 
 	routers "github.com/bermanbenjamin/futStats/cmd/api"
 	"github.com/bermanbenjamin/futStats/internal/config"
@@ -26,14 +25,18 @@ func main() {
 	dep := config.InitializeDependencies(db.DB)
 
 	g := gin.Default()
-	config := cors.Config{
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
-		AllowOrigins:     []string{"http://localhost:3000", "https://your-production-domain.com"},
-		AllowCredentials: true,                        // Permite cookies e cabeçalhos de autenticação
-		ExposeHeaders:    []string{"X-Custom-Header"}, // Opcional: expõe cabeçalhos personalizados
-		MaxAge:           12 * time.Hour,
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{
+		"Origin",
+		"Content-Type",
+		"Accept",
+		"Authorization",
+		"X-Requested-With",
 	}
+	config.AllowCredentials = true
+	config.ExposeHeaders = []string{"Content-Length"}
 	g.Use(cors.New(config))
 
 	routers.SetupRouter(g, dep)
