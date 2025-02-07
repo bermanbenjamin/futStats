@@ -32,7 +32,7 @@ type Season = {
   leagues: League[]; // Many-to-many relationship with League
 };
 
-type League = Base & {
+export type League = Base & {
   ownerId: string; // UUID (references Player.ID)
   owner: Player; // Foreign key relationship
   name: string;

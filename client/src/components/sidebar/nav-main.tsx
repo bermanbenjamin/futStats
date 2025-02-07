@@ -22,6 +22,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { appRoutes } from "@/lib/routes";
 import { useSessionStore } from "@/stores/session-store";
 import { NavItem } from "./nav-item";
 
@@ -65,7 +66,7 @@ export function NavMain() {
           {
             name: "Criar Liga",
             icon: Icons.shieldPlus,
-            href: `/${player?.ID}/leagues`,
+            href: appRoutes.player.leagues.create,
             exact: true,
           },
         ]),
