@@ -4,7 +4,7 @@ type Player struct {
 	Base
 	Email       string   `json:"email" binding:"required,email" gorm:"unique;not null"`
 	Password    string   `json:"-" binding:"required" gorm:"not null"`
-	Age         int      `json:"-" binding:"required" gorm:"check: age > 14"`
+	Age         int      `json:"-" binding:"required"`
 	Name        string   `json:"name" binding:"required" gorm:"not null"`
 	Goals       int      `json:"goals" gorm:"deafult:0"`
 	Assists     int      `json:"assists" gorm:"deafult:0"`
