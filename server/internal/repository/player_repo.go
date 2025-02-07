@@ -20,7 +20,7 @@ func NewPlayerRepository(db *gorm.DB) *PlayerRepository {
 func (r *PlayerRepository) GetPlayerBy(filter constants.QueryFilter, value string) (*models.Player, error) {
 	var player models.Player
 	query := fmt.Sprintf("%s = ?", filter)
-	if err := r.DB.Where(query, value).First(&player).Error; err != nil {
+	if err := r.DB.Preload("Leagues").Where(query, value).First(&player).Error; err != nil {
 		log.Printf("Error retrieving player with filter %s='%s': %v", filter, value, err)
 		return nil, err
 	}
