@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"log"
 
 	"github.com/bermanbenjamin/futStats/cmd/api/constants"
 	"github.com/bermanbenjamin/futStats/internal/commons"
@@ -27,13 +26,11 @@ func (s *LeagueService) CreateLeague(league *models.League) (*models.League, err
 		return nil, errors.New("could not find player with id")
 	}
 
-	log.Printf("player with id %s already exists", league.OwnerId.String())
-
 	if league.Slug == "" {
 		league.Slug = commons.Slugify(league.Name)
 	}
 
-	league, err = s.repo.CreateLeague(league)
+	league, err = s.repo.CreateLeague(league, player)
 
 	if err != nil {
 		return nil, err

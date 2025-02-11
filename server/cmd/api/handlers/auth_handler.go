@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/bermanbenjamin/futStats/cmd/api/requests"
@@ -30,6 +31,7 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 
 	player, token, err := h.authService.Login(credentials.Username, credentials.Password)
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err})
 		return
 	}
@@ -62,12 +64,14 @@ func (h *AuthHandler) Logout(ctx *gin.Context) {
 func (h *AuthHandler) SignUp(ctx *gin.Context) {
 	var request = requests.SignInRequest{}
 	if err := ctx.ShouldBindJSON(&request); err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
 	player, token, err := h.authService.SignUp(&request)
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to sign in"})
 		return
 	}

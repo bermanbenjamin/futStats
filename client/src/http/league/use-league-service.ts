@@ -1,13 +1,19 @@
 import {
   useMutation,
   UseMutationOptions,
+  useQuery,
   useQueryClient,
+  UseQueryOptions,
 } from "@tanstack/react-query";
 import { HTTPError } from "ky-universal";
-import createLeagueService from ".";
-import { CreateLeagueRequest, CreateLeagueResponse } from "./types";
+import { createLeagueService, getLeagueService } from ".";
+import {
+  CreateLeagueRequest,
+  CreateLeagueResponse,
+  GetLeagueResponse,
+} from "./types";
 
-export default function useCreateLeagueService(
+function useCreateLeagueService(
   options?: UseMutationOptions<
     CreateLeagueResponse,
     HTTPError,
@@ -27,3 +33,16 @@ export default function useCreateLeagueService(
     },
   });
 }
+
+function useGetLeagueService(
+  id: string,
+  options?: UseQueryOptions<GetLeagueResponse, HTTPError, string>
+) {
+  return useQuery({
+    queryKey: ["league", id],
+    queryFn: () => getLeagueService(id),
+    ...options,
+  });
+}
+
+export { useCreateLeagueService, useGetLeagueService };

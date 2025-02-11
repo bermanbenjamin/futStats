@@ -29,6 +29,7 @@ export default function useSignInForm() {
   const { mutateAsync: signInService, isPending } = useSignInService({
     onSuccess: async (data) => {
       setCookie("token", data.token);
+      console.log(`Player logged in: ${JSON.stringify(data.player)}`);
       setPlayer(data.player);
       router.push(appRoutes.player.home(data.player.ID));
     },

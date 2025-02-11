@@ -1,10 +1,23 @@
 import { api } from "@/lib/api";
-import { CreateLeagueRequest, CreateLeagueResponse } from "./types";
+import {
+  CreateLeagueRequest,
+  CreateLeagueResponse,
+  GetLeagueResponse,
+} from "./types";
 
-export default async function createLeagueService(data: CreateLeagueRequest) {
+async function createLeagueService(data: CreateLeagueRequest) {
   return await api
     .post("v1/leagues", {
-      json: data,
+      json: {
+        owner_id: data.ownerId,
+        name: data.name,
+      },
     })
     .json<CreateLeagueResponse>();
 }
+
+async function getLeagueService(id: string) {
+  return await api.get(`v1/leagues/${id}`).json<GetLeagueResponse>();
+}
+
+export { createLeagueService, getLeagueService };

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"log"
+
 	"github.com/bermanbenjamin/futStats/cmd/api/constants"
 	"github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/services"
@@ -24,6 +26,7 @@ func (h *LeagueHandler) CreateLeague(c *gin.Context) {
 
 	var request CreateLeagueRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Println(err)
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -34,6 +37,7 @@ func (h *LeagueHandler) CreateLeague(c *gin.Context) {
 	})
 
 	if err != nil {
+		log.Println(err)
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}

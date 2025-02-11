@@ -6,3 +6,5 @@ export type CreateLeagueRequest = {
 };
 
 export type CreateLeagueResponse = League;
+
+export type GetLeagueResponse = League;
