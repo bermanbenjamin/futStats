@@ -26,7 +26,7 @@ func main() {
 
 	g := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
+	config.AllowOrigins = []string{"http://localhost:3000"}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
 	config.AllowHeaders = []string{
 		"Origin",
@@ -36,6 +36,7 @@ func main() {
 		"X-Requested-With",
 	}
 	config.AllowCredentials = true
+	config.ExposeHeaders = []string{"Content-Length"}
 	g.Use(cors.New(config))
 
 	routers.SetupRouter(g, dep)
