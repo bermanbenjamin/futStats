@@ -45,6 +45,7 @@ import {
   SlashIcon,
   SunIcon,
   Trash2Icon,
+  TrophyIcon,
   UserMinusIcon,
   UserPlusIcon,
   XIcon,
@@ -103,4 +104,5 @@ export const Icons = {
   shield: Shield,
   shieldPlus: ShieldPlus,
   shieldEllipsis: ShieldEllipsis,
+  trophy: TrophyIcon,
 };

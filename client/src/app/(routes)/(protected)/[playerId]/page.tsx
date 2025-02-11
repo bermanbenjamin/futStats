@@ -1,8 +1,11 @@
 "use client";
 
+import { Icons } from "@/components/icons";
 import { appRoutes } from "@/lib/routes";
 import { useSessionStore } from "@/stores/session-store";
 import { useRouter } from "next/navigation";
+import StatsCard from "./components/StatsCard";
+import StatsChart from "./components/StatsChart";
 
 export default function PlayerPage() {
   const router = useRouter();
@@ -25,46 +28,27 @@ export default function PlayerPage() {
       </h2>
 
       <div className="grid grid-cols-2 gap-4 mt-4">
-        <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-            Gols
-          </h3>
-          <p className="text-2xl font-semibold text-indigo-900 dark:text-indigo-100">
-            {player.goals}
-          </p>
-        </div>
-        <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-            Assistências
-          </h3>
-          <p className="text-2xl font-semibold text-indigo-900 dark:text-indigo-100">
-            {player.assists}
-          </p>
-        </div>
-        <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-            Dribles
-          </h3>
-          <p className="text-2xl font-semibold text-indigo-900 dark:text-indigo-100">
-            {player.dribbles}
-          </p>
-        </div>
-        <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-            Desarmes
-          </h3>
-          <p className="text-2xl font-semibold text-indigo-900 dark:text-indigo-100">
-            {player.disarms}
-          </p>
-        </div>
-        <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
-          <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-            Jogos
-          </h3>
-          <p className="text-2xl font-semibold text-indigo-900 dark:text-indigo-100">
-            {player.matches}
-          </p>
-        </div>
+        <StatsCard title="Gols" value={player.goals} icon={Icons.trophy} />
+        <StatsCard
+          title="Assistências"
+          value={player.assists}
+          icon={Icons.trophy}
+        />
+        <StatsCard
+          title="Dribles"
+          value={player.dribbles}
+          icon={Icons.trophy}
+        />
+        <StatsCard
+          title="Desarmes"
+          value={player.disarms}
+          icon={Icons.trophy}
+        />
+        <StatsCard title="Jogos" value={player.matches} icon={Icons.trophy} />
+      </div>
+
+      <div className="mt-4 w-full h-full">
+        <StatsChart player={player} />
       </div>
     </div>
   );
