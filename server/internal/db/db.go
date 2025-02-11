@@ -1,7 +1,6 @@
 package db
 
 import (
-	"errors"
 	"log"
 
 	"github.com/bermanbenjamin/futStats/internal/models"
@@ -12,7 +11,6 @@ import (
 var DB *gorm.DB
 
 func InitDB(dbURL string) (err error) {
-
 	DB, err = gorm.Open(postgres.Open(dbURL), &gorm.Config{
 		PrepareStmt: false,
 	})
@@ -22,10 +20,24 @@ func InitDB(dbURL string) (err error) {
 		return err
 	}
 
-	err = DB.AutoMigrate(&models.Player{}, &models.Season{}, &models.Match{}, &models.Event{}, &models.League{})
+	// Drop existing tables to reset relationships
+	err = DB.Migrator().DropTable(&models.League{}, &models.LeagueMember{}, &models.Player{}, &models.Season{}, &models.Match{}, &models.Event{})
+	if err != nil {
+		log.Printf("Failed to drop tables: %v", err)
+	}
+
+	// Migrate in correct order - Player first, then League
+	err = DB.AutoMigrate(
+		&models.Player{}, // Player must be migrated first since League depends on it
+		&models.League{},
+		&models.LeagueMember{}, // Add the join table model
+		&models.Season{},
+		&models.Match{},
+		&models.Event{},
+	)
 	if err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
-		return errors.New("Error migrating models database: " + err.Error())
+		return err
 	}
 
 	return nil

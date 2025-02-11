@@ -3,14 +3,14 @@ export type ErrorResponse = {
 };
 
 type Base = {
-  ID: string; // UUID
+  id: string; // UUID
   CreatedAt: string; // ISO 8601 date string
   UpdatedAt: string; // ISO 8601 date string
   DeletedAt: string | null; // ISO 8601 date string or null
 };
 
 export type Player = {
-  ID: string; // UUID
+  id: string; // UUID
   email: string;
   name: string;
   goals: number;
@@ -21,7 +21,8 @@ export type Player = {
   red_cards: number;
   yellow_cards: number;
   position: string;
-  leagues: League[] | null;
+  member_leagues: League[] | null;
+  owned_leagues: League[] | null;
 };
 
 type Season = {

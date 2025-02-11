@@ -22,7 +22,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { appRoutes } from "@/lib/routes";
 import { useSessionStore } from "@/stores/session-store";
 import { NavItem } from "./nav-item";
 
@@ -42,34 +41,31 @@ export function NavMain() {
     {
       name: "Início",
       icon: HomeIcon,
-      href: `/${player?.ID}`,
+      href: `/${player?.id}`,
       exact: true,
     },
     {
       name: "Ligas",
       icon: Icons.shieldEllipsis,
       items: [
-        ...(player?.leagues?.map(
-          (league) => ({
-            name: league.name,
-            icon: Icons.shield,
-            href: `/${player?.ID}/leagues/${league.ID}`,
-            exact: true,
-          }),
-          {
-            name: "Criar Liga",
-            icon: Icons.shieldPlus,
-            href: `/${player?.ID}/leagues`,
-            exact: true,
-          }
-        ) || [
-          {
-            name: "Criar Liga",
-            icon: Icons.shieldPlus,
-            href: appRoutes.player.leagues.create,
-            exact: true,
-          },
-        ]),
+        ...(player?.owned_leagues?.map((league) => ({
+          name: league.name,
+          icon: Icons.shield,
+          href: `/${player?.id}/leagues/${league.id}`,
+          exact: true,
+        })) || []),
+        ...(player?.member_leagues?.map((league) => ({
+          name: league.name,
+          icon: Icons.shield,
+          href: `/${player?.id}/leagues/${league.id}`,
+          exact: true,
+        })) || []),
+        {
+          name: "Criar Liga",
+          icon: Icons.shieldPlus,
+          href: `/${player?.id}?create-league=true`,
+          exact: true,
+        },
       ],
     },
     {

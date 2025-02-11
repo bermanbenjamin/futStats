@@ -19,10 +19,12 @@ func NewPlayerRepository(db *gorm.DB) *PlayerRepository {
 }
 func (r *PlayerRepository) GetPlayerBy(filter constants.QueryFilter, value string) (*models.Player, error) {
 	var player models.Player
-	query := fmt.Sprintf("%s = ?", filter)
-	if err := r.DB.Preload("Leagues").
-		Preload("Leagues.Owner").
-		Preload("Leagues.Members").
+	query := fmt.Sprintf("players.%s = ?", filter)
+	if err := r.DB.
+		Preload("OwnedLeagues").
+		Preload("MemberOfLeagues", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Seasons").Preload("Members")
+		}).
 		Where(query, value).First(&player).Error; err != nil {
 		log.Printf("Error retrieving player with filter %s='%s': %v", filter, value, err)
 		return nil, err

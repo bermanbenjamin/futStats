@@ -5,7 +5,7 @@ import { useSessionStore } from "@/stores/session-store";
 import { getCookie } from "cookies-next";
 import { redirect } from "next/navigation";
 
-export default function Home() {
+export default function NotFoundPage() {
   const token = getCookie("token");
   const { player } = useSessionStore();
 
