@@ -75,19 +75,19 @@ export function NavMain() {
         {
           name: "Geral",
           icon: GearIcon,
-          href: `/${player?.ID}/settings`,
+          href: `/${player?.id}/settings`,
           exact: true,
         },
         {
           name: "Cobrança",
           icon: ReceiptIcon,
-          href: `/${player?.ID}/settings/billing`,
+          href: `/${player?.id}/settings/billing`,
           exact: true,
         },
         {
           name: "Membros",
           icon: PeopleIcon,
-          href: `/${player?.ID}/settings/members`,
+          href: `/${player?.id}/settings/members`,
           exact: true,
         },
       ],

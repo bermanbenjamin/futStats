@@ -21,7 +21,7 @@ export default function useCreateLeagueForm() {
   const { mutateAsync: createLeagueService, isPending } =
     useCreateLeagueService({
       onSuccess: (league: League) => {
-        router.push(appRoutes.player.leagues.get(league.ID));
+        router.push(appRoutes.player.leagues.get(league.id));
       },
     });
 
