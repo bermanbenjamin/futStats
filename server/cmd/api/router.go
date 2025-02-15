@@ -13,7 +13,7 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 		basePath := v1.Group("")
 		basePath.Use(middlewares.AuthMiddleware)
 		{
-			basePath.GET("/leagues/:id", dependencies.LeagueHandler.GetLeague)
+			basePath.GET("/leagues/:id", dependencies.LeagueHandler.GetLeagueById)
 			basePath.POST("/leagues", dependencies.LeagueHandler.CreateLeague)
 			basePath.PUT("/leagues", dependencies.LeagueHandler.UpdateLeague)
 			basePath.DELETE("/leagues/:id", dependencies.LeagueHandler.DeleteLeague)

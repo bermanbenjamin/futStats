@@ -45,10 +45,14 @@ func (h *LeagueHandler) CreateLeague(c *gin.Context) {
 	c.JSON(201, createdLeague)
 }
 
-func (h *LeagueHandler) GetLeague(c *gin.Context) {
-	query := c.Query("x-query-filter")
-	values := c.Query("x-quey-value")
-	league, err := h.leagueService.GetLeagueBy(constants.QueryFilter(query), values)
+func (h *LeagueHandler) GetLeagueById(c *gin.Context) {
+	leagueIdStr := c.Param("id")
+	leagueId, err := uuid.Parse(leagueIdStr)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid league ID format"})
+		return
+	}
+	league, err := h.leagueService.GetLeagueBy(constants.ID, leagueId.String())
 
 	if err != nil {
 		c.JSON(404, gin.H{"error": "League not found"})
