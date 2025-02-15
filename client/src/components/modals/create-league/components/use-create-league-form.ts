@@ -1,7 +1,9 @@
 import { useCreateLeagueService } from "@/http/league/use-league-service";
 import { League } from "@/http/types";
 import { appRoutes } from "@/lib/routes";
+import { useSessionStore } from "@/stores/session-store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,17 +18,23 @@ export default function useCreateLeagueForm() {
     resolver: zodResolver(createLeagueFormSchema),
   });
 
+  const { player, setPlayer } = useSessionStore();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { mutateAsync: createLeagueService, isPending } =
     useCreateLeagueService({
       onSuccess: (league: League) => {
+        setPlayer({
+          ...player!,
+          owned_leagues: player!.owned_leagues!.concat(league),
+        });
         router.push(appRoutes.player.leagues.get(league.id));
+        queryClient.invalidateQueries({ queryKey: ["leagues"] });
       },
     });
 
   async function onSubmit(data: z.infer<typeof createLeagueFormSchema>) {
-    console.log(data);
     await createLeagueService(data);
   }
 

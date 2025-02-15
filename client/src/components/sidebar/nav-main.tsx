@@ -23,6 +23,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { useSessionStore } from "@/stores/session-store";
+import { useEffect, useState } from "react";
 import { NavItem } from "./nav-item";
 
 export type NavItemsProps = {
@@ -35,70 +36,75 @@ export type NavItemsProps = {
 );
 
 export function NavMain() {
-  const { player } = useSessionStore();
+  const player = useSessionStore((state) => state.player);
+  const [navItems, setNavItems] = useState<NavItemsProps[]>([]);
 
-  const items: NavItemsProps[] = [
-    {
-      name: "Início",
-      icon: HomeIcon,
-      href: `/${player?.id}`,
-      exact: true,
-    },
-    {
-      name: "Ligas",
-      icon: Icons.shieldEllipsis,
-      items: [
-        ...(player?.owned_leagues?.map((league) => ({
-          name: league.name,
-          icon: Icons.shield,
-          href: `/${player?.id}/leagues/${league.id}`,
-          exact: true,
-        })) || []),
-        ...(player?.member_leagues?.map((league) => ({
-          name: league.name,
-          icon: Icons.shield,
-          href: `/${player?.id}/leagues/${league.id}`,
-          exact: true,
-        })) || []),
-        {
-          name: "Criar Liga",
-          icon: Icons.shieldPlus,
-          href: `/${player?.id}?create-league=true`,
-          exact: true,
-        },
-      ],
-    },
-    {
-      name: "Configurações",
-      icon: Icons.cog,
-      items: [
-        {
-          name: "Geral",
-          icon: GearIcon,
-          href: `/${player?.id}/settings`,
-          exact: true,
-        },
-        {
-          name: "Cobrança",
-          icon: ReceiptIcon,
-          href: `/${player?.id}/settings/billing`,
-          exact: true,
-        },
-        {
-          name: "Membros",
-          icon: PeopleIcon,
-          href: `/${player?.id}/settings/members`,
-          exact: true,
-        },
-      ],
-    },
-  ];
+  useEffect(() => {
+    if (!player) return;
+    const items: NavItemsProps[] = [
+      {
+        name: "Início",
+        icon: HomeIcon,
+        href: `/${player.id}`,
+        exact: true,
+      },
+      {
+        name: "Ligas",
+        icon: Icons.shieldEllipsis,
+        items: [
+          ...(player.owned_leagues?.map((league) => ({
+            name: league.name,
+            icon: Icons.shield,
+            href: `/${player.id}/leagues/${league.id}`,
+            exact: true,
+          })) || []),
+          ...(player.member_leagues?.map((league) => ({
+            name: league.name,
+            icon: Icons.shield,
+            href: `/${player.id}/leagues/${league.id}`,
+            exact: true,
+          })) || []),
+          {
+            name: "Criar Liga",
+            icon: Icons.shieldPlus,
+            href: `/${player.id}?create-league=true`,
+            exact: true,
+          },
+        ],
+      },
+      {
+        name: "Configurações",
+        icon: Icons.cog,
+        items: [
+          {
+            name: "Geral",
+            icon: GearIcon,
+            href: `/${player.id}/settings`,
+            exact: true,
+          },
+          {
+            name: "Cobrança",
+            icon: ReceiptIcon,
+            href: `/${player.id}/settings/billing`,
+            exact: true,
+          },
+          {
+            name: "Membros",
+            icon: PeopleIcon,
+            href: `/${player.id}/settings/members`,
+            exact: true,
+          },
+        ],
+      },
+    ];
+    setNavItems(items);
+  }, [player]);
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
+        {navItems.map((item) => {
           const hasItems = item.items && item.items.length > 0;
 
           if (!hasItems) {

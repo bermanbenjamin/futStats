@@ -2,7 +2,6 @@ import {
   useMutation,
   UseMutationOptions,
   useQuery,
-  useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { HTTPError } from "ky-universal";
@@ -20,17 +19,12 @@ function useCreateLeagueService(
     CreateLeagueRequest
   >
 ) {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (data: CreateLeagueRequest) => {
       return createLeagueService(data);
     },
     mutationKey: ["createLeague"],
     ...options,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["leagues"] });
-    },
   });
 }
 

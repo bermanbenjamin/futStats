@@ -29,13 +29,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
-            <AppProviders>
+          <AppProviders>
+            <SidebarProvider>
               <Toaster />
               <AppModals />
               {children}
-            </AppProviders>
-          </SidebarProvider>
+            </SidebarProvider>
+          </AppProviders>
         </ThemeProvider>
       </body>
     </html>
