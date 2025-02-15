@@ -5,6 +5,7 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { HTTPError } from "ky-universal";
+import { toast } from "sonner";
 import { createLeagueService, getLeagueService } from ".";
 import {
   CreateLeagueRequest,
@@ -24,17 +25,21 @@ function useCreateLeagueService(
       return createLeagueService(data);
     },
     mutationKey: ["createLeague"],
+    onError: (error) => {
+      console.error(error);
+      toast.error(error.message);
+    },
     ...options,
   });
 }
 
 function useGetLeagueService(
   id: string,
-  options?: UseQueryOptions<GetLeagueResponse, HTTPError, string>
+  options?: UseQueryOptions<GetLeagueResponse, HTTPError>
 ) {
   return useQuery({
     queryKey: ["league", id],
-    queryFn: () => getLeagueService(id),
+    queryFn: async () => await getLeagueService(id),
     ...options,
   });
 }
