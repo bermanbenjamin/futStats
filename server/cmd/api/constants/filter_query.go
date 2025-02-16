@@ -10,4 +10,5 @@ const (
 	ASSISTENTID QueryFilter = "assistent_id"
 	POSITION    QueryFilter = "position"
 	EVENTID     QueryFilter = "event_id"
+	SLUG        QueryFilter = "slug"
 )

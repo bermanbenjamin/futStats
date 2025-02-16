@@ -1,40 +1,15 @@
 package routers
 
 import (
-	"github.com/bermanbenjamin/futStats/cmd/api/middlewares"
 	"github.com/bermanbenjamin/futStats/internal/config"
+	"github.com/bermanbenjamin/futStats/internal/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 	v1 := router.Group("/api/v1")
 	{
-
-		basePath := v1.Group("")
-		basePath.Use(middlewares.AuthMiddleware)
-		{
-			basePath.GET("/leagues/:id", dependencies.LeagueHandler.GetLeagueById)
-			basePath.POST("/leagues", dependencies.LeagueHandler.CreateLeague)
-			basePath.PUT("/leagues", dependencies.LeagueHandler.UpdateLeague)
-			basePath.DELETE("/leagues/:id", dependencies.LeagueHandler.DeleteLeague)
-		}
-
-		organization := v1.Group("/:slug")
-		organization.Use(middlewares.AuthMiddleware)
-		{
-
-			organization.GET("/players/:id", dependencies.PlayerHandler.GetPlayer)
-			organization.GET("/players", dependencies.PlayerHandler.GetAllPlayers)
-			organization.POST("/players", dependencies.PlayerHandler.CreatePlayer)
-			organization.PUT("/players", dependencies.PlayerHandler.UpdatePlayer)
-			organization.DELETE("/players/:id", dependencies.PlayerHandler.DeletePlayerById)
-
-			organization.GET("/events/:id", dependencies.EventHandler.GetEventByPlayerId)
-			organization.POST("/events", dependencies.EventHandler.CreateEvent)
-			organization.PUT("/events", dependencies.EventHandler.UpdateEvent)
-			organization.DELETE("/events/:id", dependencies.EventHandler.DeleteEvent)
-
-		}
+		// Public routes
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/login", dependencies.AuthHandler.Login)
@@ -42,6 +17,42 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 			auth.POST("/signup", dependencies.AuthHandler.SignUp)
 		}
 
-	}
+		// Protected routes
+		protected := v1.Group("")
+		protected.Use(middlewares.AuthMiddleware)
+		{
+			// League owner routes
+			leagues := protected.Group("/leagues")
+			leagues.Use(func(ctx *gin.Context) {
+				middlewares.OwnerMiddleware(ctx, dependencies)
+			})
+			{
+				leagues.PUT("", dependencies.LeagueHandler.UpdateLeague)
+				leagues.DELETE("/:leagueSlug", dependencies.LeagueHandler.DeleteLeague)
+			}
 
+			// General league routes
+			leagues.GET("/:leagueSlug", dependencies.LeagueHandler.GetLeagueBySlug)
+			leagues.POST("", dependencies.LeagueHandler.CreateLeague)
+
+			// Player routes
+			players := protected.Group("/players")
+			{
+				players.GET("/:id", dependencies.PlayerHandler.GetPlayer)
+				players.GET("", dependencies.PlayerHandler.GetAllPlayers)
+				players.POST("", dependencies.PlayerHandler.CreatePlayer)
+				players.PUT("", dependencies.PlayerHandler.UpdatePlayer)
+				players.DELETE("/:id", dependencies.PlayerHandler.DeletePlayerById)
+			}
+
+			// Event routes
+			events := protected.Group("/events")
+			{
+				events.GET("/:id", dependencies.EventHandler.GetEventByPlayerId)
+				events.POST("", dependencies.EventHandler.CreateEvent)
+				events.PUT("", dependencies.EventHandler.UpdateEvent)
+				events.DELETE("/:id", dependencies.EventHandler.DeleteEvent)
+			}
+		}
+	}
 }

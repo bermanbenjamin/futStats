@@ -17,6 +17,7 @@ var secretKey = os.Getenv("SECRET_KEY")
 
 type Claims struct {
 	Username string `json:"username"`
+	PlayerId string `json:"player_id"`
 	jwt.RegisteredClaims
 }
 
@@ -41,7 +42,7 @@ func (s *AuthService) Login(email string, password string) (player *models.Playe
 		return nil, "", errors.New("invalid password")
 	}
 
-	token, err = createToken(email)
+	token, err = createToken(email, player.ID.String())
 
 	if err != nil {
 		return nil, "", err
@@ -68,7 +69,7 @@ func (s *AuthService) SignUp(request *requests.SignInRequest) (player *models.Pl
 		return nil, "", err
 	}
 
-	token, err = createToken(request.Name)
+	token, err = createToken(request.Name, player.ID.String())
 
 	if err != nil {
 		return nil, "", err
@@ -114,10 +115,11 @@ func checkPassword(password string, hash string) error {
 	return err
 }
 
-func createToken(username string) (string, error) {
+func createToken(username string, playerId string) (string, error) {
 
 	claims := &Claims{
 		Username: username,
+		PlayerId: playerId,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 		},

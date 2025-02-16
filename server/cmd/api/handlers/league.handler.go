@@ -45,14 +45,9 @@ func (h *LeagueHandler) CreateLeague(c *gin.Context) {
 	c.JSON(201, createdLeague)
 }
 
-func (h *LeagueHandler) GetLeagueById(c *gin.Context) {
-	leagueIdStr := c.Param("id")
-	leagueId, err := uuid.Parse(leagueIdStr)
-	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid league ID format"})
-		return
-	}
-	league, err := h.leagueService.GetLeagueBy(constants.ID, leagueId.String())
+func (h *LeagueHandler) GetLeagueBySlug(c *gin.Context) {
+	leagueSlug := c.Param("leagueSlug")
+	league, err := h.leagueService.GetLeagueBy(constants.SLUG, leagueSlug)
 
 	if err != nil {
 		c.JSON(404, gin.H{"error": "League not found"})
@@ -81,13 +76,15 @@ func (h *LeagueHandler) UpdateLeague(c *gin.Context) {
 }
 
 func (h *LeagueHandler) DeleteLeague(c *gin.Context) {
-	var league models.League
-	if err := c.ShouldBindJSON(&league); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	leagueSlug := c.Param("leagueSlug")
+	league, err := h.leagueService.GetLeagueBy(constants.SLUG, leagueSlug)
+
+	if err != nil {
+		c.JSON(404, gin.H{"error": "League not found"})
 		return
 	}
 
-	err := h.leagueService.DeleteLeague(&league)
+	err = h.leagueService.DeleteLeague(league)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
