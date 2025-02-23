@@ -19,45 +19,32 @@ func NewLeagueRepository(db *gorm.DB) *LeagueRepository {
 }
 
 func (r *LeagueRepository) CreateLeague(league *models.League, owner *models.Player) (*models.League, error) {
-	err := r.db.Transaction(func(tx *gorm.DB) error {
-		// Create the league record
-		if err := tx.Create(league).Error; err != nil {
-			log.Printf("Error creating league record: %v", err)
-			return err
-		}
+	// Add the owner to the Members slice
+	league.Members = append(league.Members, *owner)
 
-		log.Printf("League created: %v", league)
-
-		// Add the owner as a member of the league
-		if err := tx.Model(league).Association("Members").Append(&owner); err != nil {
-			log.Printf("Error adding owner as member: %v", err)
-			return err
-		}
-
-		log.Printf("Owner added as member: %v", owner.ID)
-
-		// Load the complete league data with associations
-		if err := tx.First(league, league.ID).Error; err != nil {
-			log.Printf("Error loading league data: %v", err)
-			return err
-		}
-
-		log.Printf("League loaded: %v", league)
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to create league: %w", err)
+	// Create the league record along with the owner as a member
+	if err := r.db.Create(league).Error; err != nil {
+		log.Printf("Error creating league record: %v", err)
+		return nil, err
 	}
+
+	// Load the complete league data with associations
+	if err := r.db.Preload("Members").First(league, league.ID).Error; err != nil {
+		log.Printf("Error loading league data: %v", err)
+		return nil, err
+	}
+
+	log.Printf("League created and owner added as member: %v", league)
 
 	return league, nil
 }
 
-func (r *LeagueRepository) GetLeagueBy(query constants.QueryFilter, values string) (leagues *models.League, err error) {
+func (r *LeagueRepository) GetLeagueBy(query constants.QueryFilter, value string) (leagues *models.League, err error) {
 	var league *models.League
 	queryString := fmt.Sprintf("%s =?", query)
-	if err := r.db.Where(queryString, values).First(&league).Error; err != nil {
+
+	// Use Preload to load all associations
+	if err := r.db.Preload("Owner").Preload("Members").Where(queryString, value).First(&league).Error; err != nil {
 		return nil, err
 	}
 	return league, nil
@@ -80,17 +67,18 @@ func (r *LeagueRepository) DeleteLeague(id uuid.UUID) error {
 func (r *LeagueRepository) AddPlayerToLeague(playerId uuid.UUID, leagueId uuid.UUID) (league *models.League, err error) {
 	// First get the league
 	league = &models.League{}
-	if err := r.db.First(league, leagueId).Error; err != nil {
+	if err := r.db.Joins("JOIN league_members ON league_members.league_id = leagues.id").First(league, leagueId).Error; err != nil {
 		return nil, fmt.Errorf("league not found: %w", err)
 	}
 
-	// Add the player as a member
-	if err := r.db.Model(league).Association("Members").Append(&models.Player{Base: models.Base{ID: playerId}}); err != nil {
+	// Add the player as a member using the existing player ID
+	player := &models.Player{Base: models.Base{ID: playerId}} // Ensure we are using the existing player
+	if err := r.db.Model(league).Association("Members").Append(player); err != nil {
 		return nil, fmt.Errorf("failed to add member: %w", err)
 	}
 
-	// Reload the league with all associations
-	if err := r.db.Preload("Owner").Preload("Members").First(league, leagueId).Error; err != nil {
+	// Reload the league with all associations using joins
+	if err := r.db.Joins("JOIN owners ON owners.id = leagues.owner_id").Joins("JOIN league_members ON league_members.league_id = leagues.id").First(league, leagueId).Error; err != nil {
 		return nil, fmt.Errorf("failed to load league data: %w", err)
 	}
 

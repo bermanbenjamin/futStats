@@ -6,24 +6,20 @@ import (
 	"github.com/bermanbenjamin/futStats/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var DB *gorm.DB
 
 func InitDB(dbURL string) (err error) {
 	DB, err = gorm.Open(postgres.Open(dbURL), &gorm.Config{
+		Logger:      logger.Default.LogMode(logger.Info),
 		PrepareStmt: false,
 	})
 
 	if err != nil {
 		log.Printf("Failed to connect to database: %v", err)
 		return err
-	}
-
-	// Drop existing tables to reset relationships
-	err = DB.Migrator().DropTable(&models.League{}, &models.LeagueMember{}, &models.Player{}, &models.Season{}, &models.Match{}, &models.Event{})
-	if err != nil {
-		log.Printf("Failed to drop tables: %v", err)
 	}
 
 	// Migrate in correct order - Player first, then League

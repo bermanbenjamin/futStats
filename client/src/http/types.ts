@@ -39,5 +39,5 @@ export type League = Base & {
   name: string;
   slug: string;
   seasons: Season[]; // Many-to-many relationship with Season
-  players: Player[]; // Many-to-many relationship with Player
+  members: Player[]; // Many-to-many relationship with Player
 };

@@ -31,9 +31,12 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 				leagues.DELETE("/:leagueSlug", dependencies.LeagueHandler.DeleteLeague)
 			}
 
-			// General league routes
-			leagues.GET("/:leagueSlug", dependencies.LeagueHandler.GetLeagueBySlug)
-			leagues.POST("", dependencies.LeagueHandler.CreateLeague)
+			// General league routes (unprotected)
+			leaguesUnprotected := v1.Group("/leagues")
+			{
+				leaguesUnprotected.GET("/:leagueSlug", dependencies.LeagueHandler.GetLeagueBySlug)
+				leaguesUnprotected.POST("", dependencies.LeagueHandler.CreateLeague)
+			}
 
 			// Player routes
 			players := protected.Group("/players")
