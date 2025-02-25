@@ -6,12 +6,19 @@ import {
 } from "@tanstack/react-query";
 import { HTTPError } from "ky-universal";
 import { toast } from "sonner";
-import { createLeagueService, getLeagueService } from ".";
+import { addPlayerToLeague, createLeagueService, getLeagueService } from ".";
 import {
+  AddPlayerRequest,
   CreateLeagueRequest,
   CreateLeagueResponse,
   GetLeagueResponse,
 } from "./types";
+
+// Error handling function
+const handleError = (error: HTTPError) => {
+  console.error(error);
+  toast.error(error.message);
+};
 
 function useCreateLeagueService(
   options?: UseMutationOptions<
@@ -21,14 +28,9 @@ function useCreateLeagueService(
   >
 ) {
   return useMutation({
-    mutationFn: async (data: CreateLeagueRequest) => {
-      return createLeagueService(data);
-    },
+    mutationFn: createLeagueService,
     mutationKey: ["createLeague"],
-    onError: (error) => {
-      console.error(error);
-      toast.error(error.message);
-    },
+    onError: handleError,
     ...options,
   });
 }
@@ -39,9 +41,21 @@ function useGetLeagueService(
 ) {
   return useQuery({
     queryKey: ["league", id],
-    queryFn: async () => await getLeagueService(id),
+    queryFn: () => getLeagueService(id),
     ...options,
   });
 }
 
-export { useCreateLeagueService, useGetLeagueService };
+function useAddPlayerToLeague(
+  options?: UseMutationOptions<GetLeagueResponse, HTTPError, AddPlayerRequest>
+) {
+  return useMutation({
+    mutationFn: (data: AddPlayerRequest) =>
+      addPlayerToLeague(data.email, data.slug),
+    mutationKey: ["leagues"],
+    onError: handleError,
+    ...options,
+  });
+}
+
+export { useAddPlayerToLeague, useCreateLeagueService, useGetLeagueService };

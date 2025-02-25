@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Player } from "@/http/types";
+import { useQueryState } from "nuqs";
 import React from "react";
 
 type PlayerSectionProperties = {
@@ -18,11 +19,16 @@ type PlayerSectionProperties = {
 };
 
 const PlayersSection: React.FC<PlayerSectionProperties> = ({ players }) => {
+  const [, setIsModalOpen] = useQueryState("add-player");
+  function handleNewPlayer() {
+    setIsModalOpen("true");
+  }
+
   return (
     <section className="w-full">
       <div className="w-full flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold ">Players</h2>
-        <Button className="ml-auto">
+        <Button className="ml-auto" onClick={handleNewPlayer}>
           <Icons.circlePlus />
           Add Player
         </Button>

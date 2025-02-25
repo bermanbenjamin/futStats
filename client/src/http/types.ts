@@ -4,15 +4,16 @@ export type ErrorResponse = {
 
 type Base = {
   id: string; // UUID
-  CreatedAt: string; // ISO 8601 date string
-  UpdatedAt: string; // ISO 8601 date string
-  DeletedAt: string | null; // ISO 8601 date string or null
+  createdAt: string; // ISO 8601 date string
+  updatedAt: string; // ISO 8601 date string
+  deletedAt: string | null; // ISO 8601 date string or null
 };
 
 export type Player = {
   id: string; // UUID
   email: string;
   name: string;
+  position: string;
   goals: number;
   assists: number;
   disarms: number;
@@ -20,7 +21,6 @@ export type Player = {
   matches: number;
   red_cards: number;
   yellow_cards: number;
-  position: string;
   member_leagues: League[] | null;
   owned_leagues: League[] | null;
 };

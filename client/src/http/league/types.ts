@@ -8,3 +8,8 @@ export type CreateLeagueRequest = {
 export type CreateLeagueResponse = League;
 
 export type GetLeagueResponse = League;
+
+export type AddPlayerRequest = {
+  email: string;
+  slug: string;
+};

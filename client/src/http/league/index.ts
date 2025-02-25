@@ -20,4 +20,14 @@ async function getLeagueService(id: string) {
   return await api.get(`v1/leagues/${id}`).json<GetLeagueResponse>();
 }
 
-export { createLeagueService, getLeagueService };
+async function addPlayerToLeague(email: string, slug: string) {
+  return await api
+    .post(`v1/${slug}/players`, {
+      json: {
+        email,
+      },
+    })
+    .json<GetLeagueResponse>();
+}
+
+export { addPlayerToLeague, createLeagueService, getLeagueService };
