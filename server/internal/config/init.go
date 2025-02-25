@@ -34,7 +34,7 @@ func InitializeDependencies(db *gorm.DB) *Dependencies {
 	playerHandler := handlers.NewPlayerHandler(playerService)
 	eventHandler := handlers.NewEventsHandler(eventService)
 	authHandler := handlers.NewAuthHandler(authService)
-	leagueHandler := handlers.NewLeagueHandler(leagueService)
+	leagueHandler := handlers.NewLeagueHandler(leagueService, playerService)
 
 	return &Dependencies{
 		PlayerRepository: playerRepo,

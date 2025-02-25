@@ -21,7 +21,6 @@ func NewLeagueService(repo *repository.LeagueRepository, playerService *PlayerSe
 
 func (s *LeagueService) CreateLeague(league *models.League) (*models.League, error) {
 	player, err := s.playerService.GetPlayerBy(constants.ID, league.OwnerId.String())
-
 	if err != nil {
 		return nil, errors.New("could not find player with id")
 	}
@@ -31,12 +30,11 @@ func (s *LeagueService) CreateLeague(league *models.League) (*models.League, err
 	}
 
 	league, err = s.repo.CreateLeague(league, player)
-
 	if err != nil {
 		return nil, err
 	}
 
-	return s.AddPlayerToLeague(player.ID, league.ID)
+	return league, nil
 }
 
 func (s *LeagueService) GetLeagueBy(query constants.QueryFilter, values string) (*models.League, error) {
@@ -51,18 +49,17 @@ func (s *LeagueService) DeleteLeague(league *models.League) error {
 	return s.repo.DeleteLeague(league.ID)
 }
 
-func (s *LeagueService) AddPlayerToLeague(playerId uuid.UUID, leagueId uuid.UUID) (league *models.League, err error) {
-	_, err = s.repo.GetLeagueBy(constants.ID, leagueId.String())
-
+func (s *LeagueService) AddPlayerToLeague(playerEmail string, leagueId uuid.UUID) (league *models.League, err error) {
+	league, err = s.repo.GetLeagueBy(constants.ID, leagueId.String())
 	if err != nil {
 		return nil, errors.New("could not find league with id")
 	}
 
-	_, err = s.playerService.GetPlayerBy(constants.ID, playerId.String())
-
+	var player *models.Player
+	player, err = s.playerService.GetPlayerBy(constants.EMAIL, playerEmail)
 	if err != nil {
-		return nil, errors.New("could not find player with id")
+		return nil, errors.New("could not find player with email")
 	}
 
-	return s.repo.AddPlayerToLeague(playerId, leagueId)
+	return s.repo.AddPlayerToLeague(player, league)
 }

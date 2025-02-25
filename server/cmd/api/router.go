@@ -29,6 +29,7 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 			{
 				leagues.PUT("", dependencies.LeagueHandler.UpdateLeague)
 				leagues.DELETE("/:leagueSlug", dependencies.LeagueHandler.DeleteLeague)
+				leagues.POST("/:leagueSlug/players", dependencies.LeagueHandler.AddPlayerToLeague)
 			}
 
 			// General league routes (unprotected)
@@ -41,7 +42,7 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 			// Player routes
 			players := protected.Group("/players")
 			{
-				players.GET("/:id", dependencies.PlayerHandler.GetPlayer)
+				players.GET("/:id", dependencies.PlayerHandler.GetPlayerBy)
 				players.GET("", dependencies.PlayerHandler.GetAllPlayers)
 				players.POST("", dependencies.PlayerHandler.CreatePlayer)
 				players.PUT("", dependencies.PlayerHandler.UpdatePlayer)

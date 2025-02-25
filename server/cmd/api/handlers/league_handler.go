@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/bermanbenjamin/futStats/cmd/api/constants"
 	"github.com/bermanbenjamin/futStats/internal/models"
@@ -12,10 +13,11 @@ import (
 
 type LeagueHandler struct {
 	leagueService *services.LeagueService
+	playerService *services.PlayerService
 }
 
-func NewLeagueHandler(leagueService *services.LeagueService) *LeagueHandler {
-	return &LeagueHandler{leagueService: leagueService}
+func NewLeagueHandler(leagueService *services.LeagueService, playerService *services.PlayerService) *LeagueHandler {
+	return &LeagueHandler{leagueService: leagueService, playerService: playerService}
 }
 
 func (h *LeagueHandler) CreateLeague(c *gin.Context) {
@@ -95,26 +97,38 @@ func (h *LeagueHandler) DeleteLeague(c *gin.Context) {
 }
 
 func (h *LeagueHandler) AddPlayerToLeague(c *gin.Context) {
-	playerIdStr := c.Param("player_id")
-	leagueIdStr := c.Param("league_id")
+	type AddPlayerRequest struct {
+		Email string `json:"email" binding:"required"`
+	}
 
-	playerId, err := uuid.Parse(playerIdStr)
-	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid player ID format"})
+	var request AddPlayerRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	leagueId, err := uuid.Parse(leagueIdStr)
+	leagueSlug := c.Param("leagueSlug")
+	league, err := h.leagueService.GetLeagueBy(constants.SLUG, leagueSlug)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid league ID format"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "League not found"})
 		return
 	}
 
-	league, err := h.leagueService.AddPlayerToLeague(playerId, leagueId)
-
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+	player, err := h.playerService.GetPlayerBy(constants.EMAIL, request.Email)
+	if err != nil || player == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
 		return
 	}
-	c.JSON(200, league)
+
+	league.Members = append(league.Members, *player)
+
+	updatedLeague, err := h.leagueService.UpdateLeague(league)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update league"})
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedLeague)
 }

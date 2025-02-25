@@ -20,7 +20,7 @@ func NewPlayerHandler(service *services.PlayerService) *PlayerHandler {
 }
 
 func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
-	filterValue := ctx.GetHeader("x-api-query-value")
+	filterValue := ctx.GetHeader(constants.QUERY_FILTER)
 	filterQuery := constants.QueryFilter(ctx.GetHeader("x-api-query-filter"))
 
 	players, err := h.service.GetAllPlayers(filterQuery, filterValue)
@@ -40,18 +40,23 @@ func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"data": players, "total": len(players)})
 }
 
-func (h *PlayerHandler) GetPlayer(ctx *gin.Context) {
-	id := ctx.Param("id")
+func (h *PlayerHandler) GetPlayerBy(ctx *gin.Context) {
+	fieldType := constants.QueryFilter(ctx.GetHeader("x-api-query-field"))
+	if fieldType == "" {
+		fieldType = constants.ID // Use ID as default
+	}
 
-	player, err := h.service.GetPlayerBy(constants.ID, id)
+	id := ctx.Param("id") // Assuming ID is passed as a URL parameter
+
+	player, err := h.service.GetPlayerBy(fieldType, id)
 	if err != nil {
-		log.Printf("Error getting player with ID %v: %v", id, err)
+		log.Printf("Error getting player with %s %v: %v", fieldType, id, err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get player"})
 		return
 	}
 
 	if player == nil {
-		log.Printf("Player with ID %v not found", id)
+		log.Printf("Player with %s %v not found", fieldType, id)
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Player does not exist"})
 		return
 	}
