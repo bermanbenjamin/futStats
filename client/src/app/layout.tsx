@@ -1,4 +1,3 @@
-import AppModals from "@/components/modals";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppProviders } from "@/providers/app-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -32,7 +31,6 @@ export default function RootLayout({
           <AppProviders>
             <SidebarProvider>
               <Toaster />
-              <AppModals />
               {children}
             </SidebarProvider>
           </AppProviders>

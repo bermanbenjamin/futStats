@@ -1,34 +1,27 @@
-"use client";
-
-import { useGetLeagueService } from "@/http/league/use-league-service";
-import { useParams } from "next/navigation";
-import LeagueOverview from "./components/league-overview";
-import PlayersSection from "./components/players-section";
-
-// Force dynamic rendering
-export const dynamic = "force-dynamic";
+import Link from "next/link";
 
 export default function LeaguePage() {
-  const { leagueId } = useParams();
-  const { data, isLoading } = useGetLeagueService(leagueId as string);
-
-  console.log(data);
-
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md w-full">
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="flex flex-col gap-6 w-full">
-          <LeagueOverview
-            name={data!.name}
-            ownerName={data!.owner.name}
-            createdAt={data!.createdAt}
-            membersLength={data!.members.length}
-          />
-          <PlayersSection players={data!.members} />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            League Dashboard
+          </h2>
         </div>
-      )}
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">
+            This is a demo version. Please sign in to access the full league
+            dashboard.
+          </p>
+          <Link
+            href="/auth/sign-in"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            Sign In
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

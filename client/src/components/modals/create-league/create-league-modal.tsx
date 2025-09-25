@@ -4,6 +4,7 @@ import CreateLeagueForm from "@/components/modals/create-league/components/creat
 
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
+import { Suspense } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,7 @@ import {
   DialogTitle,
 } from "../../ui/dialog";
 
-export function CreateLeagueModal() {
+function CreateLeagueModalContent() {
   const [isOpen, setIsOpen] = useQueryState("create-league");
   const router = useRouter();
 
@@ -33,5 +34,13 @@ export function CreateLeagueModal() {
         <CreateLeagueForm />
       </DialogContent>
     </Dialog>
+  );
+}
+
+export function CreateLeagueModal() {
+  return (
+    <Suspense fallback={null}>
+      <CreateLeagueModalContent />
+    </Suspense>
   );
 }
