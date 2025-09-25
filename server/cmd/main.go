@@ -37,9 +37,10 @@ func main() {
 	if allowedOrigins == "" {
 		// Default origins for development and production
 		corsConfig.AllowOrigins = []string{
-			"http://localhost:3000",                // Local development
-			"https://futstats-frontend.vercel.app", // Vercel deployment
-			"https://futstats.vercel.app",          // Custom domain
+			"http://localhost:3000", // Local development
+			"https://client-9veaycdr8-bermanbenjamins-projects.vercel.app", // Current Vercel deployment
+			"https://futstats-frontend.vercel.app",                         // Vercel deployment
+			"https://futstats.vercel.app",                                  // Custom domain
 		}
 	} else {
 		// Split comma-separated origins

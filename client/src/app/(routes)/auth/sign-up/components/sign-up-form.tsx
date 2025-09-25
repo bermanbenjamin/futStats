@@ -2,12 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import { useState } from "react";
 
-export default function SignInForm() {
+export default function SignUpForm() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -15,8 +16,20 @@ export default function SignInForm() {
     setIsLoading(true);
 
     // Basic form validation
-    if (!email || !password) {
+    if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all fields");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters long");
       setIsLoading(false);
       return;
     }
@@ -24,12 +37,16 @@ export default function SignInForm() {
     try {
       // Here you would make the API call to your backend
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://futstats-production.up.railway.app/api/v1";
-      const response = await fetch(`${apiUrl}/auth/login`, {
+      const response = await fetch(`${apiUrl}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
       });
 
       if (response.ok) {
@@ -38,11 +55,12 @@ export default function SignInForm() {
         localStorage.setItem("token", data.token);
         window.location.href = "/dashboard";
       } else {
-        alert("Invalid credentials");
+        const errorData = await response.json();
+        alert(errorData.message || "Registration failed");
       }
     } catch (error) {
-      console.error("Login error:", error);
-      alert("Login failed. Please try again.");
+      console.error("Registration error:", error);
+      alert("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -57,6 +75,19 @@ export default function SignInForm() {
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <div>
+          <label htmlFor="name" className="block text-sm font-medium mb-1">
+            Nome Completo
+          </label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="Seu nome completo"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+        <div>
           <label htmlFor="email" className="block text-sm font-medium mb-1">
             Email
           </label>
@@ -70,17 +101,9 @@ export default function SignInForm() {
           />
         </div>
         <div>
-          <div className="flex justify-between mb-1">
-            <label htmlFor="password" className="block text-sm font-medium">
-              Senha
-            </label>
-            <Link
-              href="/auth/forgot-password"
-              className="text-sm text-muted-foreground hover:underline"
-            >
-              Esqueceu a senha?
-            </Link>
-          </div>
+          <label htmlFor="password" className="block text-sm font-medium mb-1">
+            Senha
+          </label>
           <Input
             id="password"
             type="password"
@@ -90,8 +113,24 @@ export default function SignInForm() {
             required
           />
         </div>
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium mb-1"
+          >
+            Confirmar Senha
+          </label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="••••••••"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
         <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? "Entrando..." : "Acessar"}
+          {isLoading ? "Criando conta..." : "Criar Conta"}
         </Button>
       </form>
     </div>
