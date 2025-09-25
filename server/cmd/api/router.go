@@ -21,6 +21,17 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 		// Public routes
 		auth := v1.Group("/auth")
 		{
+			// Handle OPTIONS requests for CORS preflight
+			auth.OPTIONS("/login", func(c *gin.Context) {
+				c.Status(200)
+			})
+			auth.OPTIONS("/logout", func(c *gin.Context) {
+				c.Status(200)
+			})
+			auth.OPTIONS("/signup", func(c *gin.Context) {
+				c.Status(200)
+			})
+			
 			auth.POST("/login", dependencies.AuthHandler.Login)
 			auth.POST("/logout", dependencies.AuthHandler.Logout)
 			auth.POST("/signup", dependencies.AuthHandler.SignUp)
