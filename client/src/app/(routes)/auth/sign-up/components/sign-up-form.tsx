@@ -9,6 +9,7 @@ export default function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [birthdate, setBirthdate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -16,7 +17,7 @@ export default function SignUpForm() {
     setIsLoading(true);
 
     // Basic form validation
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword || !birthdate) {
       alert("Please fill in all fields");
       setIsLoading(false);
       return;
@@ -35,6 +36,17 @@ export default function SignUpForm() {
     }
 
     try {
+      // Calculate age from birthdate
+      const birthDate = new Date(birthdate);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      const finalAge =
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+          ? age - 1
+          : age;
+
       // Here you would make the API call to your backend
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL ||
@@ -48,6 +60,7 @@ export default function SignUpForm() {
           name,
           email,
           password,
+          age: finalAge,
         }),
       });
 
@@ -99,6 +112,18 @@ export default function SignUpForm() {
             placeholder="youremail@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="birthdate" className="block text-sm font-medium mb-1">
+            Data de Nascimento
+          </label>
+          <Input
+            id="birthdate"
+            type="date"
+            value={birthdate}
+            onChange={(e) => setBirthdate(e.target.value)}
             required
           />
         </div>
