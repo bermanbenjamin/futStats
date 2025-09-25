@@ -2,8 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
-	"strings"
 
 	routers "github.com/bermanbenjamin/futStats/cmd/api"
 	"github.com/bermanbenjamin/futStats/cmd/api/constants"
@@ -30,50 +28,19 @@ func main() {
 	g := gin.Default()
 
 	// CORS configuration for production
-	corsConfig := cors.DefaultConfig()
-
-	// Get allowed origins from environment variables
-	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
-	if allowedOrigins == "" {
-		// Build origins from individual environment variables
-		var origins []string
-
-		// Always allow localhost for development
-		origins = append(origins, "http://localhost:3000")
-
-		// Add Vercel frontend URL if provided
-		if vercelUrl := os.Getenv("VERCEL_FRONTEND_URL"); vercelUrl != "" {
-			origins = append(origins, vercelUrl)
-		}
-
-		// Add custom domain if provided
-		if customDomain := os.Getenv("CUSTOM_DOMAIN"); customDomain != "" {
-			origins = append(origins, customDomain)
-		}
-
-		corsConfig.AllowOrigins = origins
-	} else {
-		// Split comma-separated origins
-		corsConfig.AllowOrigins = strings.Split(allowedOrigins, ",")
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "https://client-j1b0qb677-bermanbenjamins-projects.vercel.app"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With", constants.QUERY_FILTER},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * 60 * 60, // 12 hours
 	}
-
-	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
-	corsConfig.AllowHeaders = []string{
-		"Origin",
-		"Content-Type",
-		"Accept",
-		"Authorization",
-		"X-Requested-With",
-		constants.QUERY_FILTER,
-	}
-	corsConfig.AllowCredentials = true
-	corsConfig.ExposeHeaders = []string{"Content-Length"}
-	corsConfig.MaxAge = 12 * 60 * 60 // 12 hours
 
 	log.Printf("CORS Configuration:")
 	log.Printf("- Allowed Origins: %v", corsConfig.AllowOrigins)
 	log.Printf("- Allowed Methods: %v", corsConfig.AllowMethods)
-	log.Printf("- Allowed Headers: %v", corsConfig.AllowHeaders)
+	log.Printf("- Allow Credentials: %v", corsConfig.AllowCredentials)
 
 	g.Use(cors.New(corsConfig))
 
