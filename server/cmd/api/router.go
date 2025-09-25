@@ -7,6 +7,15 @@ import (
 )
 
 func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
+	// Health check endpoint for Railway
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status":  "healthy",
+			"service": "futStats API",
+			"version": "1.0.0",
+		})
+	})
+
 	v1 := router.Group("/api/v1")
 	{
 		// Public routes

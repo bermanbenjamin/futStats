@@ -21,8 +21,8 @@ const LeagueOverview: React.FC<LeagueOverviewProps> = ({
       <div className="grid grid-cols-2 gap-4">
         <div className="p-4 border rounded-lg w-full">
           <h2 className="text-lg font-semibold mb-2">League Details</h2>
-          <p>Owner: {ownerName}</p>
-          <p>Created at: {new Date(createdAt).toLocaleDateString("pt-BR")}</p>
+          <p>Dono: {ownerName}</p>
+          <p>Criada em: {new Date(createdAt).toLocaleDateString("pt-BR")}</p>
         </div>
         <div className="p-4 border rounded-lg w-full">
           <h2 className="text-lg font-semibold mb-2">Members</h2>

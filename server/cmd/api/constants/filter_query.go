@@ -3,7 +3,7 @@ package constants
 type QueryFilter string
 
 const (
-	QUERY_FILTER string = "x-api-field-type"
+	QUERY_FILTER string = "X-api-field-type"
 )
 
 const (

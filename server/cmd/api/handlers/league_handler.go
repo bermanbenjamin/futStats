@@ -29,7 +29,7 @@ func (h *LeagueHandler) CreateLeague(c *gin.Context) {
 	var request CreateLeagueRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Println(err)
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -40,11 +40,11 @@ func (h *LeagueHandler) CreateLeague(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(201, createdLeague)
+	c.JSON(http.StatusCreated, createdLeague)
 }
 
 func (h *LeagueHandler) GetLeagueBySlug(c *gin.Context) {
@@ -52,29 +52,28 @@ func (h *LeagueHandler) GetLeagueBySlug(c *gin.Context) {
 	league, err := h.leagueService.GetLeagueBy(constants.SLUG, leagueSlug)
 
 	if err != nil {
-		c.JSON(404, gin.H{"error": "League not found", "detail_message": err})
+		c.JSON(http.StatusNotFound, gin.H{"error": "League not found", "detail_message": err.Error()})
 		return
 	}
 
-	c.JSON(200, league)
-
+	c.JSON(http.StatusOK, league)
 }
 
 func (h *LeagueHandler) UpdateLeague(c *gin.Context) {
 	var league models.League
 	if err := c.ShouldBindJSON(&league); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	updatedLeague, err := h.leagueService.UpdateLeague(&league)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, updatedLeague)
+	c.JSON(http.StatusOK, updatedLeague)
 }
 
 func (h *LeagueHandler) DeleteLeague(c *gin.Context) {

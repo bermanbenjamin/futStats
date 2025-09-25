@@ -41,7 +41,7 @@ func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
 }
 
 func (h *PlayerHandler) GetPlayerBy(ctx *gin.Context) {
-	fieldType := constants.QueryFilter(ctx.GetHeader("x-api-query-field"))
+	fieldType := constants.QueryFilter(ctx.GetHeader(constants.QUERY_FILTER))
 	if fieldType == "" {
 		fieldType = constants.ID // Use ID as default
 	}

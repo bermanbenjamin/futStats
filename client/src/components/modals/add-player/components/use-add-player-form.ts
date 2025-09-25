@@ -4,6 +4,7 @@ import { useAddPlayerToLeague } from "@/http/league/use-league-service";
 import { useGetPlayerService } from "@/http/player/use-player-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const addPlayerFormSchema = z.object({
@@ -29,7 +30,8 @@ export default function useAddPlayerForm() {
     const player = await getPlayer(data.email);
 
     if (!player) {
-      throw new Error("Player not found");
+      toast("Jogador com este email não encontrado.");
+      return;
     }
 
     await addPlayerToLeague(data);

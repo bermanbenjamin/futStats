@@ -1,8 +1,12 @@
 package enums
 
 const (
-	Goal = "Goal"
+	Goal   = "Goal"
 	Assist = "Assist"
-	Dribble = "Dribble"
-	Disarm = "Disarm"
+	// MVP: Goals and Assists for now - can add more event types later
+	// Dribble    = "Dribble"
+	// Disarm     = "Disarm"
+	// YellowCard = "YellowCard"
+	// RedCard    = "RedCard"
+	// Match      = "Match"
 )

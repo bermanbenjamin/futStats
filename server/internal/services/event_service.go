@@ -6,13 +6,20 @@ import (
 	"github.com/google/uuid"
 )
 
-type EventService struct {
-	repo          *repository.EventsRepository
-	playerService *PlayerService
+type EventServiceInterface interface {
+	GetEventById(id uuid.UUID) (*models.Event, error)
+	GetAllEventsByPlayerId(playerId uuid.UUID) ([]models.Event, error)
+	CreateEvent(event *models.Event) (*models.Event, error)
+	UpdateEvent(event models.Event) (*models.Event, error)
+	DeleteEvent(id uuid.UUID) error
 }
 
-func NewEventService(repo *repository.EventsRepository, playerService *PlayerService) *EventService {
-	return &EventService{repo: repo, playerService: playerService}
+type EventService struct {
+	repo *repository.EventsRepository
+}
+
+func NewEventService(repo *repository.EventsRepository) *EventService {
+	return &EventService{repo: repo}
 }
 
 func (s *EventService) GetEventById(id uuid.UUID) (*models.Event, error) {
@@ -21,29 +28,14 @@ func (s *EventService) GetEventById(id uuid.UUID) (*models.Event, error) {
 
 func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]models.Event, error) {
 	events, err := s.repo.GetEventsByPlayerId(playerId)
-
 	if err != nil {
 		return nil, err
 	}
-
 	return events, nil
 }
 
 func (s *EventService) CreateEvent(event *models.Event) (*models.Event, error) {
-	player, err := s.playerService.UpdatePlayerByEvent(*event, true)
-
-	if err != nil {
-		return nil, err
-	}
-
-	event.Player = *player
-
-	newEvent, err := s.repo.CreateEvent(event)
-	if err != nil {
-		return nil, err
-	}
-
-	return newEvent, nil
+	return s.repo.CreateEvent(event)
 }
 
 func (s *EventService) UpdateEvent(event models.Event) (*models.Event, error) {
@@ -51,25 +43,9 @@ func (s *EventService) UpdateEvent(event models.Event) (*models.Event, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return updatedEvent, nil
 }
 
 func (s *EventService) DeleteEvent(id uuid.UUID) error {
-	event, err := s.GetEventById(id)
-	if err != nil {
-		return err
-	}
-
-	if event == nil {
-		return nil
-	}
-
-	_, err = s.playerService.UpdatePlayerByEvent(*event, false)
-
-	if err != nil {
-		return err
-	}
-
 	return s.repo.DeleteEvent(id)
 }

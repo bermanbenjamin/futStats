@@ -12,6 +12,7 @@ import {
   CreateLeagueRequest,
   CreateLeagueResponse,
   GetLeagueResponse,
+  mapGetLeagueApiResponseToLeague,
 } from "./types";
 
 // Error handling function
@@ -41,7 +42,17 @@ function useGetLeagueService(
 ) {
   return useQuery({
     queryKey: ["league", id],
-    queryFn: () => getLeagueService(id),
+    queryFn: async () => {
+      const response = await getLeagueService(id);
+      return mapGetLeagueApiResponseToLeague(response);
+    },
+    onError: (error) => {
+      if (error.response?.status === 404) {
+        toast.error("League not found");
+      } else {
+        handleError(error);
+      }
+    },
     ...options,
   });
 }

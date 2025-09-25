@@ -9,6 +9,8 @@ export default function LeaguePage() {
   const { leagueId } = useParams();
   const { data, isLoading } = useGetLeagueService(leagueId as string);
 
+  console.log(data);
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-md w-full">
       {isLoading ? (
@@ -18,7 +20,7 @@ export default function LeaguePage() {
           <LeagueOverview
             name={data!.name}
             ownerName={data!.owner.name}
-            createdAt={data!.CreatedAt}
+            createdAt={data!.createdAt}
             membersLength={data!.members.length}
           />
           <PlayersSection players={data!.members} />

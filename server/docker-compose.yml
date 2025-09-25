@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: futstats-db
+    environment:
+      POSTGRES_DB: futstats
+      POSTGRES_USER: futstats
+      POSTGRES_PASSWORD: futstats123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U futstats -d futstats"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Go API Backend
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: futstats-api
+    environment:
+      DATABASE_URL: postgres://futstats:futstats123@postgres:5432/futstats?sslmode=disable
+      PORT: 8080
+      SECRET_KEY: your-secret-key-change-in-production
+      ENVIRONMENT: development
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:3001
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

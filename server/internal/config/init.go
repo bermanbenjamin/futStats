@@ -26,8 +26,9 @@ func InitializeDependencies(db *gorm.DB) *Dependencies {
 	eventRepo := repository.NewEventsRepository(db)
 	leagueRepo := repository.NewLeagueRepository(db)
 
-	playerService := services.NewPlayerService(playerRepo)
-	eventService := services.NewEventService(eventRepo, playerService)
+	// Inject dependencies - normalized approach
+	playerService := services.NewPlayerService(playerRepo, eventRepo)
+	eventService := services.NewEventService(eventRepo)
 	authService := services.NewAuthService(playerService)
 	leagueService := services.NewLeagueService(leagueRepo, playerService)
 

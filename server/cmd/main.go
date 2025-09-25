@@ -2,8 +2,11 @@ package main
 
 import (
 	"log"
+	"os"
+	"strings"
 
 	routers "github.com/bermanbenjamin/futStats/cmd/api"
+	"github.com/bermanbenjamin/futStats/cmd/api/constants"
 	"github.com/bermanbenjamin/futStats/internal/config"
 	"github.com/bermanbenjamin/futStats/internal/db"
 	"github.com/gin-contrib/cors"
@@ -25,19 +28,37 @@ func main() {
 	dep := config.InitializeDependencies(db.DB)
 
 	g := gin.Default()
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"}
-	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
-	config.AllowHeaders = []string{
+
+	// CORS configuration for production
+	corsConfig := cors.DefaultConfig()
+
+	// Get allowed origins from environment or use default
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	if allowedOrigins == "" {
+		// Default origins for development and production
+		corsConfig.AllowOrigins = []string{
+			"http://localhost:3000",                // Local development
+			"https://futstats-frontend.vercel.app", // Vercel deployment
+			"https://futstats.vercel.app",          // Custom domain
+		}
+	} else {
+		// Split comma-separated origins
+		corsConfig.AllowOrigins = strings.Split(allowedOrigins, ",")
+	}
+
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	corsConfig.AllowHeaders = []string{
 		"Origin",
 		"Content-Type",
 		"Accept",
 		"Authorization",
 		"X-Requested-With",
+		constants.QUERY_FILTER,
 	}
-	config.AllowCredentials = true
-	config.ExposeHeaders = []string{"Content-Length"}
-	g.Use(cors.New(config))
+	corsConfig.AllowCredentials = true
+	corsConfig.ExposeHeaders = []string{"Content-Length"}
+
+	g.Use(cors.New(corsConfig))
 
 	routers.SetupRouter(g, dep)
 
