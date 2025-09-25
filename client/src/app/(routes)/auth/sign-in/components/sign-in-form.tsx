@@ -1,22 +1,54 @@
 "use client";
 
-import { Icons } from "@/components/icons";
-import PasswordInput from "@/components/inputs/password-input";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import useSignInForm from "./use-sign-in-form";
+import { useState } from "react";
 
 export default function SignInForm() {
-  const { form, onSubmit, isPending } = useSignInForm();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    // Basic form validation
+    if (!email || !password) {
+      alert("Please fill in all fields");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Here you would make the API call to your backend
+      const response = await fetch(
+        "https://futstats-production.up.railway.app/api/v1/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        // Store token and redirect
+        localStorage.setItem("token", data.token);
+        window.location.href = "/dashboard";
+      } else {
+        alert("Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -25,54 +57,45 @@ export default function SignInForm() {
           <div className="w-full border-t" />
         </div>
       </div>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col space-y-4"
-        >
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="youremail@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium mb-1">
+            Email
+          </label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="youremail@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex justify-between">
-                  <FormLabel>Senha</FormLabel>
-                  <Link
-                    href={"/auth/forgot-password"}
-                    passHref
-                    className="text-sm text-muted-foreground"
-                  >
-                    Esqueceu a senha?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <FormControl>
-                    <PasswordInput placeholder="••••••••" {...field} />
-                  </FormControl>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
+        </div>
+        <div>
+          <div className="flex justify-between mb-1">
+            <label htmlFor="password" className="block text-sm font-medium">
+              Senha
+            </label>
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm text-muted-foreground hover:underline"
+            >
+              Esqueceu a senha?
+            </Link>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          <Button type="submit" disabled={isPending}>
-            {isPending && <Icons.loader className="animate-spin mr-2 size-4" />}
-            Acessar
-          </Button>
-        </form>
-      </Form>
+        </div>
+        <Button type="submit" disabled={isLoading} className="w-full">
+          {isLoading ? "Entrando..." : "Acessar"}
+        </Button>
+      </form>
     </div>
   );
 }
