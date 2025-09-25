@@ -4,16 +4,32 @@ import { Icons } from "@/components/icons";
 import { appRoutes } from "@/lib/routes";
 import { useSessionStore } from "@/stores/session-store";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import StatsCard from "./components/StatsCard";
 import StatsChart from "./components/StatsChart";
+
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 
 export default function PlayerPage() {
   const router = useRouter();
   const { player } = useSessionStore();
 
+  useEffect(() => {
+    if (!player) {
+      router.push(appRoutes.auth.signIn);
+    }
+  }, [player, router]);
+
   if (!player) {
-    router.push(appRoutes.auth.signIn);
-    return;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+          <p className="text-gray-600">Redirecting to sign in...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

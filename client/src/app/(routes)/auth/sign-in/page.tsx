@@ -1,7 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import SignInForm from "./components/sign-in-form";
+
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
 
 export default function SignInPage() {
   return (
@@ -15,7 +19,17 @@ export default function SignInPage() {
                 Faça o login na sua conta.
               </h2>
             </div>
-            <SignInForm />
+            <Suspense
+              fallback={
+                <div className="flex flex-col space-y-4">
+                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              }
+            >
+              <SignInForm />
+            </Suspense>
             <div className="self-center my-8 text-sm">
               <div className="flex gap-x-1">
                 <span className="text-muted-foreground">

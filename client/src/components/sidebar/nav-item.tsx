@@ -2,7 +2,7 @@ import { type IconType } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import type { NavItemsProps } from "./nav-main";
 
 export type NavItemType = {
@@ -12,7 +12,7 @@ export type NavItemType = {
   exact?: boolean;
 };
 
-export function NavItem({ item }: { item: NavItemsProps }) {
+function NavItemContent({ item }: { item: NavItemsProps }) {
   const { name, icon: Icon, href, exact } = item;
 
   const [hovered, setHovered] = useState(false);
@@ -42,5 +42,20 @@ export function NavItem({ item }: { item: NavItemsProps }) {
       />
       {name}
     </Link>
+  );
+}
+
+export function NavItem({ item }: { item: NavItemsProps }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="group flex items-center gap-2.5 rounded-md p-2 text-sm leading-none text-neutral-600 dark:text-neutral-100">
+          <div className="size-4 bg-neutral-300 dark:bg-neutral-600 rounded animate-pulse" />
+          <div className="h-4 w-20 bg-neutral-300 dark:bg-neutral-600 rounded animate-pulse" />
+        </div>
+      }
+    >
+      <NavItemContent item={item} />
+    </Suspense>
   );
 }

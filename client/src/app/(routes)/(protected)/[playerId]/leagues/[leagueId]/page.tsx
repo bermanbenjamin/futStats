@@ -5,6 +5,9 @@ import { useParams } from "next/navigation";
 import LeagueOverview from "./components/league-overview";
 import PlayersSection from "./components/players-section";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 export default function LeaguePage() {
   const { leagueId } = useParams();
   const { data, isLoading } = useGetLeagueService(leagueId as string);
