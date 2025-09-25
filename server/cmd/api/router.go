@@ -31,7 +31,7 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 			auth.OPTIONS("/signup", func(c *gin.Context) {
 				c.Status(200)
 			})
-			
+
 			auth.POST("/login", dependencies.AuthHandler.Login)
 			auth.POST("/logout", dependencies.AuthHandler.Logout)
 			auth.POST("/signup", dependencies.AuthHandler.SignUp)
