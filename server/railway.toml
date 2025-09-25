@@ -1,9 +1,6 @@
 # Railway Configuration for futStats
 
-# Railway will automatically detect this as a Docker project
-# and use the Dockerfile for deployment
-
-# Build configuration
+# Force Railway to use Docker instead of Nixpacks
 [build]
 builder = "dockerfile"
 dockerfilePath = "Dockerfile"
