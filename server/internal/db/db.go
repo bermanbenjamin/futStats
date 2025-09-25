@@ -22,6 +22,12 @@ func InitDB(dbURL string) (err error) {
 		return err
 	}
 
+	// Enable UUID extension for PostgreSQL
+	err = DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
+	if err != nil {
+		log.Printf("Warning: Failed to create UUID extension (might already exist): %v", err)
+	}
+
 	// Migrate in correct order - Player first, then League
 	err = DB.AutoMigrate(
 		&models.Player{}, // Player must be migrated first since League depends on it

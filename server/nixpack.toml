@@ -1,0 +1,14 @@
+# Nixpacks configuration for futStats Go API
+# This tells Railway how to build and run your Go application
+
+[phases.setup]
+nixPkgs = ["go_1_23"]
+
+[phases.install]
+cmds = ["go mod download"]
+
+[phases.build]
+cmds = ["go build -o main ./cmd/main.go"]
+
+[start]
+cmd = "./main"
