@@ -31,9 +31,32 @@ func main() {
 
 	// CORS configuration for production
 	corsConfig := cors.DefaultConfig()
-	
-	// For debugging, let's make CORS more permissive
-	corsConfig.AllowAllOrigins = true
+
+	// Get allowed origins from environment variables
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	if allowedOrigins == "" {
+		// Build origins from individual environment variables
+		var origins []string
+
+		// Always allow localhost for development
+		origins = append(origins, "http://localhost:3000")
+
+		// Add Vercel frontend URL if provided
+		if vercelUrl := os.Getenv("VERCEL_FRONTEND_URL"); vercelUrl != "" {
+			origins = append(origins, vercelUrl)
+		}
+
+		// Add custom domain if provided
+		if customDomain := os.Getenv("CUSTOM_DOMAIN"); customDomain != "" {
+			origins = append(origins, customDomain)
+		}
+
+		corsConfig.AllowOrigins = origins
+	} else {
+		// Split comma-separated origins
+		corsConfig.AllowOrigins = strings.Split(allowedOrigins, ",")
+	}
+
 	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
 	corsConfig.AllowHeaders = []string{
 		"Origin",
@@ -47,8 +70,8 @@ func main() {
 	corsConfig.ExposeHeaders = []string{"Content-Length"}
 	corsConfig.MaxAge = 12 * 60 * 60 // 12 hours
 
-	log.Printf("CORS Configuration (Debug Mode - Allow All Origins):")
-	log.Printf("- Allow All Origins: %v", corsConfig.AllowAllOrigins)
+	log.Printf("CORS Configuration:")
+	log.Printf("- Allowed Origins: %v", corsConfig.AllowOrigins)
 	log.Printf("- Allowed Methods: %v", corsConfig.AllowMethods)
 	log.Printf("- Allowed Headers: %v", corsConfig.AllowHeaders)
 
