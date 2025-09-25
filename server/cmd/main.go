@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"strings"
 
 	routers "github.com/bermanbenjamin/futStats/cmd/api"
 	"github.com/bermanbenjamin/futStats/cmd/api/constants"
@@ -29,18 +31,33 @@ func main() {
 	// Custom CORS middleware
 	g.Use(func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
-		allowedOrigins := []string{
-			"http://localhost:3000",
-			"https://client-jlcuuxswn-bermanbenjamins-projects.vercel.app",
-		}
 
 		// Check if origin is allowed
 		allowed := false
-		for _, allowedOrigin := range allowedOrigins {
-			if origin == allowedOrigin {
-				allowed = true
-				break
+
+		// Allow localhost for development
+		if origin == "http://localhost:3000" {
+			allowed = true
+		}
+
+		// Get allowed origins from environment variables
+		allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+		if allowedOrigins != "" {
+			origins := strings.Split(allowedOrigins, ",")
+			for _, allowedOrigin := range origins {
+				allowedOrigin = strings.TrimSpace(allowedOrigin)
+				if origin == allowedOrigin {
+					allowed = true
+					break
+				}
 			}
+		}
+
+		// Allow any Vercel deployment from your project (fallback)
+		if !allowed && origin != "" &&
+			(strings.HasPrefix(origin, "https://client-") &&
+				strings.HasSuffix(origin, "-bermanbenjamins-projects.vercel.app")) {
+			allowed = true
 		}
 
 		if allowed {
@@ -61,7 +78,11 @@ func main() {
 	})
 
 	log.Printf("Custom CORS middleware configured")
-	log.Printf("- Allowed Origins: http://localhost:3000, https://client-j1b0qb677-bermanbenjamins-projects.vercel.app")
+	log.Printf("- Localhost allowed: http://localhost:3000")
+	log.Printf("- Vercel pattern: https://client-*-bermanbenjamins-projects.vercel.app")
+	if allowedOrigins := os.Getenv("ALLOWED_ORIGINS"); allowedOrigins != "" {
+		log.Printf("- Additional origins: %s", allowedOrigins)
+	}
 
 	routers.SetupRouter(g, dep)
 
