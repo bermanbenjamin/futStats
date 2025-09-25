@@ -23,31 +23,50 @@ var (
 
 // LoadConfig loads environment variables and returns a populated Config struct
 func LoadConfig() (*Config, error) {
-	// Attempt to load the .env file, but do not fail if it doesn't exist
-	if err := godotenv.Load(".env"); err != nil {
-		log.Printf("Warning: .env file not found, relying on environment variables: %v", err)
+	// Only load .env file in development (when ENVIRONMENT is not set to production)
+	env := os.Getenv("ENVIRONMENT")
+	if env != "production" {
+		if err := godotenv.Load(".env"); err != nil {
+			log.Printf("Warning: .env file not found, relying on environment variables: %v", err)
+		}
+	} else {
+		log.Printf("Production environment detected, using system environment variables")
 	}
 
 	// Retrieve DATABASE_URL from environment
 	url := os.Getenv("DATABASE_URL")
 	if url == "" {
 		log.Printf("Error: DATABASE_URL is empty or invalid")
+		log.Printf("Please ensure PostgreSQL database is added to your Railway project")
+		log.Printf("Run: railway add --database postgresql")
 		return nil, ErrEmptyDatabaseUrl
 	}
 
-	// Retrieve PORT from environment
+	// Retrieve PORT from environment, default to 8080
 	port := os.Getenv("PORT")
 	if port == "" {
-		log.Printf("Error: PORT not set in environment variables")
-		return nil, ErrMissingPort
+		port = "8080"
+		log.Printf("Warning: PORT not set, using default: 8080")
 	}
 
 	// Populate and return the config
 	config := &Config{
 		DatabaseUrl:   url,
-		ServerAddress: port, // Prepend ":" to match the Go server address format
+		ServerAddress: port,
 	}
 
-	log.Printf("Configuration loaded successfully: %+v", config)
+	log.Printf("Configuration loaded successfully:")
+	log.Printf("- Database URL: %s", maskDatabaseUrl(url))
+	log.Printf("- Server Address: %s", port)
+	log.Printf("- Environment: %s", os.Getenv("ENVIRONMENT"))
+
 	return config, nil
+}
+
+// maskDatabaseUrl masks sensitive parts of the database URL for logging
+func maskDatabaseUrl(url string) string {
+	if len(url) < 20 {
+		return "***"
+	}
+	return url[:10] + "***" + url[len(url)-10:]
 }
