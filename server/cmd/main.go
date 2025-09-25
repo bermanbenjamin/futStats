@@ -32,16 +32,26 @@ func main() {
 	// CORS configuration for production
 	corsConfig := cors.DefaultConfig()
 
-	// Get allowed origins from environment or use default
+	// Get allowed origins from environment variables
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 	if allowedOrigins == "" {
-		// Default origins for development and production
-		corsConfig.AllowOrigins = []string{
-			"http://localhost:3000", // Local development
-			"https://client-9veaycdr8-bermanbenjamins-projects.vercel.app", // Current Vercel deployment
-			"https://futstats-frontend.vercel.app",                         // Vercel deployment
-			"https://futstats.vercel.app",                                  // Custom domain
+		// Build origins from individual environment variables
+		var origins []string
+		
+		// Always allow localhost for development
+		origins = append(origins, "http://localhost:3000")
+		
+		// Add Vercel frontend URL if provided
+		if vercelUrl := os.Getenv("VERCEL_FRONTEND_URL"); vercelUrl != "" {
+			origins = append(origins, vercelUrl)
 		}
+		
+		// Add custom domain if provided
+		if customDomain := os.Getenv("CUSTOM_DOMAIN"); customDomain != "" {
+			origins = append(origins, customDomain)
+		}
+		
+		corsConfig.AllowOrigins = origins
 	} else {
 		// Split comma-separated origins
 		corsConfig.AllowOrigins = strings.Split(allowedOrigins, ",")

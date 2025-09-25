@@ -23,7 +23,9 @@ export default function SignInForm() {
 
     try {
       // Here you would make the API call to your backend
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://futstats-production.up.railway.app/api/v1";
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://futstats-production.up.railway.app/api/v1";
       const response = await fetch(`${apiUrl}/auth/login`, {
         method: "POST",
         headers: {
