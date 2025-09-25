@@ -11,6 +11,9 @@ import (
 type Config struct {
 	DatabaseUrl   string
 	ServerAddress string
+	LogLevel      string
+	LogFormat     string
+	Environment   string
 }
 
 // Define custom error types for better debugging
@@ -49,16 +52,39 @@ func LoadConfig() (*Config, error) {
 		log.Printf("Warning: PORT not set, using default: 8080")
 	}
 
+	// Retrieve log level from environment, default to info
+	logLevel := os.Getenv("LOG_LEVEL")
+	if logLevel == "" {
+		logLevel = "info"
+	}
+
+	// Retrieve log format from environment, default to json
+	logFormat := os.Getenv("LOG_FORMAT")
+	if logFormat == "" {
+		logFormat = "json"
+	}
+
+	// Get environment
+	environment := os.Getenv("ENVIRONMENT")
+	if environment == "" {
+		environment = "development"
+	}
+
 	// Populate and return the config
 	config := &Config{
 		DatabaseUrl:   url,
 		ServerAddress: port,
+		LogLevel:      logLevel,
+		LogFormat:     logFormat,
+		Environment:   environment,
 	}
 
 	log.Printf("Configuration loaded successfully:")
 	log.Printf("- Database URL: %s", maskDatabaseUrl(url))
 	log.Printf("- Server Address: %s", port)
-	log.Printf("- Environment: %s", os.Getenv("ENVIRONMENT"))
+	log.Printf("- Environment: %s", environment)
+	log.Printf("- Log Level: %s", logLevel)
+	log.Printf("- Log Format: %s", logFormat)
 
 	return config, nil
 }

@@ -9,7 +9,10 @@ import (
 	"github.com/bermanbenjamin/futStats/cmd/api/constants"
 	"github.com/bermanbenjamin/futStats/internal/config"
 	"github.com/bermanbenjamin/futStats/internal/db"
+	"github.com/bermanbenjamin/futStats/internal/logger"
+	"github.com/bermanbenjamin/futStats/internal/middlewares"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -19,14 +22,38 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
+	// Initialize logger
+	loggerConfig := logger.Config{
+		Level:  cfg.LogLevel,
+		Format: cfg.LogFormat,
+	}
+
+	err = logger.InitGlobal(loggerConfig)
+	if err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+
+	// Get global logger instance
+	appLogger := logger.GetGlobal()
+	defer appLogger.Sync()
+
+	appLogger.Info("Starting FutStats server",
+		zap.String("environment", cfg.Environment),
+		zap.String("log_level", cfg.LogLevel),
+		zap.String("log_format", cfg.LogFormat),
+	)
+
 	err = db.InitDB(cfg.DatabaseUrl)
 	if err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
+		appLogger.Fatal("Failed to initialize database", zap.Error(err))
 	}
 
 	dep := config.InitializeDependencies(db.DB)
 
 	g := gin.Default()
+
+	// Add logging middleware
+	g.Use(middlewares.LoggingMiddleware())
 
 	// Custom CORS middleware
 	g.Use(func(c *gin.Context) {
@@ -77,17 +104,19 @@ func main() {
 		c.Next()
 	})
 
-	log.Printf("Custom CORS middleware configured")
-	log.Printf("- Localhost allowed: http://localhost:3000")
-	log.Printf("- Vercel pattern: https://client-*-bermanbenjamins-projects.vercel.app")
+	appLogger.Info("Custom CORS middleware configured",
+		zap.String("localhost_allowed", "http://localhost:3000"),
+		zap.String("vercel_pattern", "https://client-*-bermanbenjamins-projects.vercel.app"),
+	)
+
 	if allowedOrigins := os.Getenv("ALLOWED_ORIGINS"); allowedOrigins != "" {
-		log.Printf("- Additional origins: %s", allowedOrigins)
+		appLogger.Info("Additional CORS origins configured", zap.String("origins", allowedOrigins))
 	}
 
 	routers.SetupRouter(g, dep)
 
-	log.Printf("Starting server on %s...", cfg.ServerAddress)
+	appLogger.Info("Starting server", zap.String("address", ":"+cfg.ServerAddress))
 	if err := g.Run(":" + cfg.ServerAddress); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+		appLogger.Fatal("Failed to start server", zap.Error(err))
 	}
 }
