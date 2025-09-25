@@ -13,3 +13,8 @@ export type AddPlayerRequest = {
   email: string;
   slug: string;
 };
+
+// Mapping function for API responses
+export function mapGetLeagueApiResponseToLeague(response: GetLeagueResponse): League {
+  return response;
+}

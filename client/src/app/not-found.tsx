@@ -11,7 +11,7 @@ export default function NotFoundPage() {
 
   if (token) {
     console.log(player);
-    redirect(appRoutes.player.home(player!.ID));
+    redirect(appRoutes.player.home(player!.id));
   } else {
     redirect(appRoutes.auth.signIn);
   }
