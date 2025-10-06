@@ -43,7 +43,6 @@ export const api = ky.create({
     ],
     afterResponse: [
       async (request, options, response) => {
-        // You can handle successful responses here if needed
         return response;
       },
     ],

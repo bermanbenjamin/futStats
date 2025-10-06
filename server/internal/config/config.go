@@ -52,10 +52,10 @@ func LoadConfig() (*Config, error) {
 		log.Printf("Warning: PORT not set, using default: 8080")
 	}
 
-	// Retrieve log level from environment, default to info
+	// Retrieve log level from environment, default to debug
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel == "" {
-		logLevel = "all"
+		logLevel = "debug"
 	}
 
 	// Retrieve log format from environment, default to json

@@ -174,6 +174,7 @@ func createToken(username string, playerId string) (string, error) {
 
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
+		// Use global logger since this is a standalone function
 		logger.GetGlobal().Error("Token signing failed",
 			zap.String("username", username),
 			zap.String("player_id", playerId),

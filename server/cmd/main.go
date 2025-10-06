@@ -80,15 +80,18 @@ func main() {
 			}
 		}
 
-		// Allow any Vercel deployment from your project (fallback)
+		// Allow any Vercel deployment (fallback)
 		if !allowed && origin != "" &&
-			(strings.HasPrefix(origin, "https://client-") &&
-				strings.HasSuffix(origin, "-bermanbenjamins-projects.vercel.app")) {
+			(strings.Contains(origin, "vercel.app")) {
 			allowed = true
 		}
 
+		// Always set CORS headers for allowed origins
 		if allowed {
 			c.Header("Access-Control-Allow-Origin", origin)
+		} else {
+			// Log blocked origins for debugging
+			appLogger.Warn("CORS blocked origin", zap.String("origin", origin))
 		}
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization, X-Requested-With, "+constants.QUERY_FILTER)
