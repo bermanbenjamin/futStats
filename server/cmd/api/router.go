@@ -1,7 +1,10 @@
 package routers
 
 import (
+	"time"
+
 	"github.com/bermanbenjamin/futStats/internal/config"
+	"github.com/bermanbenjamin/futStats/internal/logger"
 	"github.com/bermanbenjamin/futStats/internal/middlewares"
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +18,38 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 			"version": "1.0.0",
 		})
 	})
+
+	// Test endpoint for logging verification
+	router.GET("/test-logs", func(c *gin.Context) {
+		testLogger := logger.GetGlobal()
+		testLogger.Info("Test log from /test-logs endpoint")
+		testLogger.Warn("Test warning log")
+		testLogger.Error("Test error log")
+
+		c.JSON(200, gin.H{
+			"message":   "Test logs generated - check Railway logs",
+			"timestamp": time.Now().Unix(),
+		})
+	})
+
+	// Legacy auth routes (for backward compatibility)
+	auth := router.Group("/auth")
+	{
+		// Handle OPTIONS requests for CORS preflight
+		auth.OPTIONS("/login", func(c *gin.Context) {
+			c.Status(200)
+		})
+		auth.OPTIONS("/logout", func(c *gin.Context) {
+			c.Status(200)
+		})
+		auth.OPTIONS("/signup", func(c *gin.Context) {
+			c.Status(200)
+		})
+
+		auth.POST("/login", dependencies.AuthHandler.Login)
+		auth.POST("/logout", dependencies.AuthHandler.Logout)
+		auth.POST("/signup", dependencies.AuthHandler.SignUp)
+	}
 
 	v1 := router.Group("/api/v1")
 	{

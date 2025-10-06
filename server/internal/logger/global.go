@@ -16,12 +16,17 @@ var (
 func InitGlobal(config Config) error {
 	var err error
 	once.Do(func() {
-		// Check if we're in development mode
-		if os.Getenv("ENVIRONMENT") == "development" || os.Getenv("ENVIRONMENT") == "" {
-			globalLogger, err = NewDevelopment()
-		} else {
-			globalLogger, err = NewProduction()
+		// Always use the config provided, but ensure it outputs to stdout/stderr for Railway
+		config.OutputPath = "stdout"
+		config.ErrorPath = "stderr"
+
+		// Force JSON format in production for better log parsing
+		environment := os.Getenv("ENVIRONMENT")
+		if environment == "production" || environment == "railway" {
+			config.Format = "json"
 		}
+
+		globalLogger, err = New(config)
 	})
 	return err
 }

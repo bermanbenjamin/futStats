@@ -2,52 +2,37 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useSignInService } from "@/http/auth/use-auth-service";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  const signInMutation = useSignInService({
+    onSuccess: (data) => {
+      // Store token and redirect
+      localStorage.setItem("token", data.token);
+      window.location.href = "/dashboard";
+    },
+    onError: (error) => {
+      console.error("Login error:", error);
+      alert("Login failed. Please try again.");
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     // Basic form validation
     if (!email || !password) {
       alert("Please fill in all fields");
-      setIsLoading(false);
       return;
     }
 
-    try {
-      // Here you would make the API call to your backend
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL ||
-        "https://futstats-production.up.railway.app/api/v1";
-      const response = await fetch(`${apiUrl}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Store token and redirect
-        localStorage.setItem("token", data.token);
-        window.location.href = "/dashboard";
-      } else {
-        alert("Invalid credentials");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Login failed. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    // Use the proper auth service
+    signInMutation.mutate({ email, password });
   };
 
   return (
@@ -92,8 +77,12 @@ export default function SignInForm() {
             required
           />
         </div>
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? "Entrando..." : "Acessar"}
+        <Button
+          type="submit"
+          disabled={signInMutation.isPending}
+          className="w-full"
+        >
+          {signInMutation.isPending ? "Entrando..." : "Acessar"}
         </Button>
       </form>
     </div>

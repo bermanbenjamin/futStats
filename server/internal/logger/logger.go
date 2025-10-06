@@ -66,10 +66,12 @@ func New(config Config) (*Logger, error) {
 		encoder = zapcore.NewJSONEncoder(encoderConfig)
 	}
 
-	// Create write syncer
+	// Create write syncer - always use stdout for Railway compatibility
 	var writeSyncer zapcore.WriteSyncer
-	if config.OutputPath == "stdout" {
+	if config.OutputPath == "stdout" || config.OutputPath == "" {
 		writeSyncer = zapcore.AddSync(os.Stdout)
+	} else if config.OutputPath == "stderr" {
+		writeSyncer = zapcore.AddSync(os.Stderr)
 	} else {
 		file, err := os.OpenFile(config.OutputPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {

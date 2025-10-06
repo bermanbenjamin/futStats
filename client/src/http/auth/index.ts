@@ -1,5 +1,10 @@
 import { api } from "@/lib/api";
-import { SignInRequest, SignInResponse } from "./types";
+import {
+  SignInRequest,
+  SignInResponse,
+  SignUpRequest,
+  SignUpResponse,
+} from "./types";
 
 export default async function signInService({
   email,
@@ -10,6 +15,24 @@ export default async function signInService({
       json: {
         username: email,
         password,
+      },
+    })
+    .json();
+}
+
+export async function signUpService({
+  name,
+  email,
+  password,
+  age,
+}: SignUpRequest): Promise<SignUpResponse> {
+  return await api
+    .post("/v1/auth/signup", {
+      json: {
+        name,
+        email,
+        password,
+        age,
       },
     })
     .json();

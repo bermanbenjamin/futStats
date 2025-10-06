@@ -22,10 +22,12 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	// Initialize logger
+	// Initialize logger with Railway-compatible configuration
 	loggerConfig := logger.Config{
-		Level:  cfg.LogLevel,
-		Format: cfg.LogFormat,
+		Level:      cfg.LogLevel,
+		Format:     cfg.LogFormat,
+		OutputPath: "stdout", // Ensure logs go to stdout for Railway
+		ErrorPath:  "stderr", // Errors go to stderr
 	}
 
 	err = logger.InitGlobal(loggerConfig)
@@ -35,14 +37,26 @@ func main() {
 
 	// Get global logger instance
 	appLogger := logger.GetGlobal()
-	defer appLogger.Sync()
+	defer func() {
+		if syncErr := appLogger.Sync(); syncErr != nil {
+			// Don't fail on sync errors in production
+			log.Printf("Warning: Failed to sync logger: %v", syncErr)
+		}
+	}()
 
 	appLogger.Info("Starting FutStats server",
 		zap.String("environment", cfg.Environment),
 		zap.String("log_level", cfg.LogLevel),
 		zap.String("log_format", cfg.LogFormat),
 		zap.String("version", "1.0.1"), // Updated logging configuration
+		zap.String("railway_deployment", "true"),
 	)
+
+	// Test log levels to ensure they work
+	appLogger.Debug("Debug log test - this should appear if LOG_LEVEL=debug")
+	appLogger.Info("Info log test - this should always appear")
+	appLogger.Warn("Warning log test - this should appear if LOG_LEVEL >= warn")
+	appLogger.Error("Error log test - this should always appear")
 
 	err = db.InitDB(cfg.DatabaseUrl)
 	if err != nil {

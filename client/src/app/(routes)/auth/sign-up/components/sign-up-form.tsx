@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useSignUpService } from "@/http/auth/use-auth-service";
 import { useState } from "react";
 
 export default function SignUpForm() {
@@ -10,75 +11,51 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [birthdate, setBirthdate] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  const signUpMutation = useSignUpService({
+    onSuccess: (data) => {
+      // Store token and redirect
+      localStorage.setItem("token", data.token);
+      window.location.href = "/dashboard";
+    },
+    onError: (error) => {
+      console.error("Registration error:", error);
+      alert("Registration failed. Please try again.");
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     // Basic form validation
     if (!name || !email || !password || !confirmPassword || !birthdate) {
       alert("Please fill in all fields");
-      setIsLoading(false);
       return;
     }
 
     if (password !== confirmPassword) {
       alert("Passwords do not match");
-      setIsLoading(false);
       return;
     }
 
     if (password.length < 6) {
       alert("Password must be at least 6 characters long");
-      setIsLoading(false);
       return;
     }
 
-    try {
-      // Calculate age from birthdate
-      const birthDate = new Date(birthdate);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      const finalAge =
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < birthDate.getDate())
-          ? age - 1
-          : age;
+    // Calculate age from birthdate
+    const birthDate = new Date(birthdate);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const finalAge =
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ? age - 1
+        : age;
 
-      // Here you would make the API call to your backend
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL ||
-        "https://futstats-production.up.railway.app/api/v1";
-      const response = await fetch(`${apiUrl}/auth/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          age: finalAge,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Store token and redirect
-        localStorage.setItem("token", data.token);
-        window.location.href = "/dashboard";
-      } else {
-        const errorData = await response.json();
-        alert(errorData.message || "Registration failed");
-      }
-    } catch (error) {
-      console.error("Registration error:", error);
-      alert("Registration failed. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    // Use the proper auth service
+    signUpMutation.mutate({ name, email, password, age: finalAge });
   };
 
   return (
@@ -156,8 +133,12 @@ export default function SignUpForm() {
             required
           />
         </div>
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? "Criando conta..." : "Criar Conta"}
+        <Button
+          type="submit"
+          disabled={signUpMutation.isPending}
+          className="w-full"
+        >
+          {signUpMutation.isPending ? "Criando conta..." : "Criar Conta"}
         </Button>
       </form>
     </div>
