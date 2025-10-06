@@ -41,6 +41,7 @@ func main() {
 		zap.String("environment", cfg.Environment),
 		zap.String("log_level", cfg.LogLevel),
 		zap.String("log_format", cfg.LogFormat),
+		zap.String("version", "1.0.1"), // Updated logging configuration
 	)
 
 	err = db.InitDB(cfg.DatabaseUrl)
