@@ -26,7 +26,7 @@ const handleApiError = async (error: ApiError) => {
 };
 
 export const api = ky.create({
-  prefixUrl: API_CONFIG.baseUrl,
+  prefixUrl: API_CONFIG.baseUrl + "/api",
   headers: {
     "Content-Type": "application/json",
   },

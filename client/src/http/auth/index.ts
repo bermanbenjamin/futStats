@@ -6,7 +6,7 @@ export default async function signInService({
   password,
 }: SignInRequest): Promise<SignInResponse> {
   return await api
-    .post("v1/auth/login", {
+    .post("/v1/auth/login", {
       json: {
         username: email,
         password,
