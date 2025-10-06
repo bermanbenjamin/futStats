@@ -43,7 +43,13 @@ func (s *AuthService) Login(email string, password string) (player *models.Playe
 		s.logger.Warn("Login failed - player not found",
 			zap.String("email", email),
 			zap.Error(err))
-		return nil, "", errors.New("error getting player from server with this email: " + email)
+		return nil, "", err
+	}
+
+	if player == nil {
+		s.logger.Warn("Login failed - player not found",
+			zap.String("email", email))
+		return nil, "", errors.New("player not found")
 	}
 
 	if err := checkPassword(password, player.Password); err != nil {

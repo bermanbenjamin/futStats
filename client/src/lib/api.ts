@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 // Constants for configuration
 const API_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
+  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080",
   timeout: 100000,
   retries: 2,
   authTokenCookie: "token",

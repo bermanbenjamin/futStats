@@ -10,14 +10,21 @@ export default async function signInService({
   email,
   password,
 }: SignInRequest): Promise<SignInResponse> {
-  return await api
+  console.log("signInService called with:", { email, password });
+  console.log("API base URL:", process.env.NEXT_PUBLIC_API_URL);
+
+  const response = (await api
     .post("/v1/auth/login", {
       json: {
         username: email,
         password,
       },
     })
-    .json();
+    .json()) as SignInResponse;
+
+  console.log("Login response:", response);
+
+  return response;
 }
 
 export async function signUpService({
