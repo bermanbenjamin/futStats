@@ -16,12 +16,20 @@ interface ApiError extends Error {
   };
 }
 
-// Custom error handler
-const handleApiError = async (error: ApiError) => {
+// Pure error handler with explicit side effects
+const handleApiError = async (error: ApiError): Promise<never> => {
+  // Explicit side effect: logging
+  console.error("API Error:", {
+    status: error.response?.status,
+    message: error.message,
+  });
+
+  // Explicit side effect: authentication redirect
   if (error.response?.status === 401) {
     redirect("/auth/sign-in");
-    console.error("Authentication error:", error);
   }
+
+  // Re-throw to maintain error chain
   throw error;
 };
 

@@ -5,39 +5,69 @@ import (
 	"net/http"
 
 	"github.com/bermanbenjamin/futStats/cmd/api/constants"
+	"github.com/bermanbenjamin/futStats/internal/logger"
 	"github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/services"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type PlayerHandler struct {
 	service *services.PlayerService
+	logger  *logger.Logger
 }
 
+// NewPlayerHandler creates a new player handler with proper dependency injection
 func NewPlayerHandler(service *services.PlayerService) *PlayerHandler {
-	return &PlayerHandler{service: service}
+	return &PlayerHandler{
+		service: service,
+		logger:  logger.GetGlobal().WithComponent("player_handler"),
+	}
 }
 
+// GetAllPlayers retrieves all players with optional filtering
 func (h *PlayerHandler) GetAllPlayers(ctx *gin.Context) {
 	filterValue := ctx.GetHeader(constants.QUERY_FILTER)
 	filterQuery := constants.QueryFilter(ctx.GetHeader("x-api-query-filter"))
 
+	h.logger.Info("Getting all players",
+		zap.String("filter", string(filterQuery)),
+		zap.String("value", filterValue))
+
 	players, err := h.service.GetAllPlayers(filterQuery, filterValue)
-
 	if err != nil {
-		log.Printf("Error getting all players: %v", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve players"})
+		h.logger.Error("Failed to get players",
+			zap.String("filter", string(filterQuery)),
+			zap.String("value", filterValue),
+			zap.Error(err))
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve players",
+			"code":  "PLAYERS_FETCH_FAILED",
+		})
 		return
 	}
 
-	if players == nil {
-		log.Println("No players found")
-		ctx.JSON(http.StatusNoContent, gin.H{"data": nil})
+	if len(players) == 0 {
+		h.logger.Info("No players found",
+			zap.String("filter", string(filterQuery)),
+			zap.String("value", filterValue))
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"data":  []interface{}{},
+			"total": 0,
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": players, "total": len(players)})
+	h.logger.Info("Successfully retrieved players",
+		zap.Int("count", len(players)))
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":  players,
+		"total": len(players),
+	})
 }
 
 func (h *PlayerHandler) GetPlayerBy(ctx *gin.Context) {
@@ -64,23 +94,43 @@ func (h *PlayerHandler) GetPlayerBy(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, player)
 }
 
+// CreatePlayer creates a new player from request data
 func (h *PlayerHandler) CreatePlayer(ctx *gin.Context) {
 	var player *models.Player
 	if err := ctx.ShouldBindJSON(&player); err != nil {
-		log.Printf("Error binding player data: %v", err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid player data"})
+		h.logger.Error("Failed to bind player data from request",
+			zap.Error(err))
+
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid player data",
+			"code":  "INVALID_PLAYER_DATA",
+		})
 		return
 	}
 
-	player, err := h.service.CreatePlayer(player)
+	h.logger.Info("Creating new player",
+		zap.String("name", player.Name),
+		zap.String("email", player.Email))
+
+	createdPlayer, err := h.service.CreatePlayer(player)
 	if err != nil {
-		log.Printf("Error creating player: %v", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create player"})
+		h.logger.Error("Failed to create player",
+			zap.String("name", player.Name),
+			zap.String("email", player.Email),
+			zap.Error(err))
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create player",
+			"code":  "PLAYER_CREATION_FAILED",
+		})
 		return
 	}
 
-	log.Printf("Player created with ID: %v", player.ID)
-	ctx.JSON(http.StatusCreated, player)
+	h.logger.Info("Player created successfully",
+		zap.String("player_id", createdPlayer.ID.String()),
+		zap.String("name", createdPlayer.Name))
+
+	ctx.JSON(http.StatusCreated, createdPlayer)
 }
 
 func (h *PlayerHandler) UpdatePlayer(ctx *gin.Context) {

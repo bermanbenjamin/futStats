@@ -5,13 +5,24 @@ import (
 	"log"
 
 	"github.com/bermanbenjamin/futStats/cmd/api/constants"
+	"github.com/bermanbenjamin/futStats/internal/logger"
 	"github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type PlayerRepository struct {
-	DB *gorm.DB
+	DB     *gorm.DB
+	logger *logger.Logger
+}
+
+// NewPlayerRepository creates a new player repository with proper dependency injection
+func NewPlayerRepository(db *gorm.DB) *PlayerRepository {
+	return &PlayerRepository{
+		DB:     db,
+		logger: logger.GetGlobal().WithComponent("player_repository"),
+	}
 }
 
 type PlayerRepositoryInterface interface {
@@ -22,9 +33,6 @@ type PlayerRepositoryInterface interface {
 	DeletePlayer(id uuid.UUID) error
 }
 
-func NewPlayerRepository(db *gorm.DB) *PlayerRepository {
-	return &PlayerRepository{DB: db}
-}
 func (r *PlayerRepository) GetPlayerBy(filter constants.QueryFilter, value string) (*models.Player, error) {
 	var player models.Player
 	query := fmt.Sprintf("players.%s = ?", filter)
@@ -37,7 +45,10 @@ func (r *PlayerRepository) GetPlayerBy(filter constants.QueryFilter, value strin
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
 		}
-		log.Printf("Error retrieving player with filter %s='%s': %v", filter, value, err)
+		r.logger.Error("Failed to retrieve player from database",
+			zap.String("filter", string(filter)),
+			zap.String("value", value),
+			zap.Error(err))
 		return nil, err
 	}
 	return &player, nil

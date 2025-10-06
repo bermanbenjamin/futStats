@@ -40,32 +40,41 @@ func SetGlobal(logger *Logger) {
 	globalLogger = logger
 }
 
+// DEPRECATED: Use dependency injection instead of global functions
+// These functions are kept for backward compatibility but should not be used in new code
+
 // Info logs at info level using global logger
+// DEPRECATED: Use logger instance from dependency injection
 func Info(msg string, fields ...zap.Field) {
 	GetGlobal().Info(msg, fields...)
 }
 
 // Debug logs at debug level using global logger
+// DEPRECATED: Use logger instance from dependency injection
 func Debug(msg string, fields ...zap.Field) {
 	GetGlobal().Debug(msg, fields...)
 }
 
 // Warn logs at warn level using global logger
+// DEPRECATED: Use logger instance from dependency injection
 func Warn(msg string, fields ...zap.Field) {
 	GetGlobal().Warn(msg, fields...)
 }
 
 // Error logs at error level using global logger
+// DEPRECATED: Use logger instance from dependency injection
 func Error(msg string, fields ...zap.Field) {
 	GetGlobal().Error(msg, fields...)
 }
 
 // Fatal logs at fatal level using global logger
+// DEPRECATED: Use logger instance from dependency injection
 func Fatal(msg string, fields ...zap.Field) {
 	GetGlobal().Fatal(msg, fields...)
 }
 
 // Panic logs at panic level using global logger
+// DEPRECATED: Use logger instance from dependency injection
 func Panic(msg string, fields ...zap.Field) {
 	GetGlobal().Panic(msg, fields...)
 }
