@@ -55,7 +55,7 @@ func LoadConfig() (*Config, error) {
 	// Retrieve log level from environment, default to info
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel == "" {
-		logLevel = "info"
+		logLevel = "all"
 	}
 
 	// Retrieve log format from environment, default to json

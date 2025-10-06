@@ -50,7 +50,7 @@ func (s *AuthService) Login(email string, password string) (player *models.Playe
 		s.logger.Warn("Login failed - invalid password",
 			zap.String("email", email),
 			zap.String("player_id", player.ID.String()))
-		return nil, "", errors.New("invalid password")
+		return nil, "", errors.New("server or password is incorrect")
 	}
 
 	token, err = createToken(email, player.ID.String())

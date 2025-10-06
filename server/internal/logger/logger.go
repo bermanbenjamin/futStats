@@ -25,7 +25,7 @@ type Config struct {
 func New(config Config) (*Logger, error) {
 	// Set default values
 	if config.Level == "" {
-		config.Level = "info"
+		config.Level = "all"
 	}
 	if config.Format == "" {
 		config.Format = "json"
