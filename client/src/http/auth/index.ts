@@ -11,10 +11,9 @@ export default async function signInService({
   password,
 }: SignInRequest): Promise<SignInResponse> {
   console.log("signInService called with:", { email, password });
-  console.log("API base URL:", process.env.NEXT_PUBLIC_API_URL);
 
   const response = (await api
-    .post("/v1/auth/login", {
+    .post("v1/auth/login", {
       json: {
         username: email,
         password,
@@ -34,7 +33,7 @@ export async function signUpService({
   age,
 }: SignUpRequest): Promise<SignUpResponse> {
   return await api
-    .post("/v1/auth/signup", {
+    .post("v1/auth/signup", {
       json: {
         name,
         email,

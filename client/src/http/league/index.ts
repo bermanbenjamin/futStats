@@ -7,7 +7,7 @@ import {
 
 async function createLeagueService(data: CreateLeagueRequest) {
   return await api
-    .post("/v1/leagues", {
+    .post("v1/leagues", {
       json: {
         owner_id: data.ownerId,
         name: data.name,
@@ -17,12 +17,12 @@ async function createLeagueService(data: CreateLeagueRequest) {
 }
 
 async function getLeagueService(id: string) {
-  return await api.get(`/v1/leagues/${id}`).json<GetLeagueResponse>();
+  return await api.get(`v1/leagues/${id}`).json<GetLeagueResponse>();
 }
 
 async function addPlayerToLeague(email: string, slug: string) {
   return await api
-    .post(`/v1/${slug}/players`, {
+    .post(`v1/${slug}/players`, {
       json: {
         email,
       },

@@ -46,17 +46,8 @@ func main() {
 
 	appLogger.Info("Starting FutStats server",
 		zap.String("environment", cfg.Environment),
-		zap.String("log_level", cfg.LogLevel),
-		zap.String("log_format", cfg.LogFormat),
-		zap.String("version", "1.0.1"), // Updated logging configuration
-		zap.String("railway_deployment", "true"),
+		zap.String("version", "1.0.1"),
 	)
-
-	// Test log levels to ensure they work
-	appLogger.Debug("Debug log test - this should appear if LOG_LEVEL=debug")
-	appLogger.Info("Info log test - this should always appear")
-	appLogger.Warn("Warning log test - this should appear if LOG_LEVEL >= warn")
-	appLogger.Error("Error log test - this should always appear")
 
 	err = db.InitDB(cfg.DatabaseUrl)
 	if err != nil {
@@ -101,6 +92,12 @@ func main() {
 			allowed = true
 		}
 
+		// Log CORS decision for debugging
+		appLogger.Info("CORS check",
+			zap.String("origin", origin),
+			zap.Bool("allowed", allowed),
+			zap.String("allowed_origins", allowedOrigins))
+
 		// Always set CORS headers for allowed origins
 		if allowed {
 			c.Header("Access-Control-Allow-Origin", origin)
@@ -122,17 +119,11 @@ func main() {
 		c.Next()
 	})
 
-	appLogger.Info("Custom CORS middleware configured",
-		zap.String("localhost_allowed", "http://localhost:3000"),
-		zap.String("vercel_pattern", "https://client-*-bermanbenjamins-projects.vercel.app"),
-	)
-
-	if allowedOrigins := os.Getenv("ALLOWED_ORIGINS"); allowedOrigins != "" {
-		appLogger.Info("Additional CORS origins configured", zap.String("origins", allowedOrigins))
-	}
+	appLogger.Info("CORS middleware configured")
 
 	routers.SetupRouter(g, dep)
 
+	gin.SetMode(gin.ReleaseMode)
 	appLogger.Info("Starting server", zap.String("address", ":"+cfg.ServerAddress))
 	if err := g.Run(":" + cfg.ServerAddress); err != nil {
 		appLogger.Fatal("Failed to start server", zap.Error(err))
