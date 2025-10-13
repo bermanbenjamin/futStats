@@ -3,23 +3,31 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSignInService } from "@/http/auth/use-auth-service";
+import { useSessionStore } from "@/stores/session-store";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setPlayer } = useSessionStore();
+  const router = useRouter();
 
   const signInMutation = useSignInService({
     onSuccess: (data) => {
       console.log("Login successful, data:", data);
       console.log("Player ID:", data.player?.id);
 
-      // Store token and redirect to player dashboard
+      // Store token and player data
       localStorage.setItem("token", data.token);
 
       if (data.player?.id) {
+        // Set player in session store to prevent sidebar redirect
+        setPlayer(data.player);
+        console.log("Player set in session store");
+
         console.log("Redirecting to:", `/${data.player.id}`);
-        window.location.href = `/${data.player.id}`;
+        router.push(`/${data.player.id}`);
       } else {
         console.error("No player ID in response");
         alert("Login successful but no player data received");
