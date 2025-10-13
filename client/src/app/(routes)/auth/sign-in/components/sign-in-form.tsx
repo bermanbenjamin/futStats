@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSignInService } from "@/http/auth/use-auth-service";
-import Link from "next/link";
 import { useState } from "react";
 
 export default function SignInForm() {
@@ -12,9 +11,19 @@ export default function SignInForm() {
 
   const signInMutation = useSignInService({
     onSuccess: (data) => {
+      console.log("Login successful, data:", data);
+      console.log("Player ID:", data.player?.id);
+
       // Store token and redirect to player dashboard
       localStorage.setItem("token", data.token);
-      window.location.href = `/${data.player.id}`;
+
+      if (data.player?.id) {
+        console.log("Redirecting to:", `/${data.player.id}`);
+        window.location.href = `/${data.player.id}`;
+      } else {
+        console.error("No player ID in response");
+        alert("Login successful but no player data received");
+      }
     },
     onError: (error) => {
       console.error("Login error:", error);
@@ -22,8 +31,8 @@ export default function SignInForm() {
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    console.log("Button clicked, handling login");
 
     // Basic form validation
     if (!email || !password) {
@@ -31,8 +40,10 @@ export default function SignInForm() {
       return;
     }
 
+    console.log("About to call mutation with:", { email, password });
     // Use the proper auth service
     signInMutation.mutate({ email, password });
+    console.log("Mutation called");
   };
 
   return (
@@ -42,7 +53,7 @@ export default function SignInForm() {
           <div className="w-full border-t" />
         </div>
       </div>
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium mb-1">
             Email
@@ -53,6 +64,11 @@ export default function SignInForm() {
             placeholder="youremail@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSubmit();
+              }
+            }}
             required
           />
         </div>
@@ -61,12 +77,9 @@ export default function SignInForm() {
             <label htmlFor="password" className="block text-sm font-medium">
               Senha
             </label>
-            <Link
-              href="/auth/forgot-password"
-              className="text-sm text-muted-foreground hover:underline"
-            >
+            <span className="text-sm text-muted-foreground cursor-not-allowed opacity-50">
               Esqueceu a senha?
-            </Link>
+            </span>
           </div>
           <Input
             id="password"
@@ -74,17 +87,22 @@ export default function SignInForm() {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSubmit();
+              }
+            }}
             required
           />
         </div>
         <Button
-          type="submit"
+          onClick={handleSubmit}
           disabled={signInMutation.isPending}
           className="w-full"
         >
           {signInMutation.isPending ? "Entrando..." : "Acessar"}
         </Button>
-      </form>
+      </div>
     </div>
   );
 }
