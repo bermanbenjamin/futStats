@@ -12,9 +12,9 @@ export default function SignInForm() {
 
   const signInMutation = useSignInService({
     onSuccess: (data) => {
-      // Store token and redirect
+      // Store token and redirect to player dashboard
       localStorage.setItem("token", data.token);
-      window.location.href = "/dashboard";
+      window.location.href = `/${data.player.id}`;
     },
     onError: (error) => {
       console.error("Login error:", error);
