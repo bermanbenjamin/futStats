@@ -70,3 +70,38 @@ func (h *SeasonHandler) GetSeasonById(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": season})
 }
+
+func (h *SeasonHandler) GetSeasonStats(c *gin.Context) {
+	seasonIdStr := c.Param("seasonId")
+	seasonId, err := uuid.Parse(seasonIdStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid season ID format"})
+		return
+	}
+
+	players, err := h.service.GetSeasonStats(seasonId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": players})
+}
+
+func (h *SeasonHandler) FinishSeason(c *gin.Context) {
+	leagueSlug := c.Param("leagueSlug")
+	seasonIdStr := c.Param("seasonId")
+	seasonId, err := uuid.Parse(seasonIdStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid season ID format"})
+		return
+	}
+
+	season, err := h.service.FinishSeason(leagueSlug, seasonId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": season})
+}

@@ -52,7 +52,7 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 		zap.String("username", credentials.Username),
 		zap.String("player_id", player.ID.String()))
 
-	ctx.JSON(http.StatusOK, gin.H{"player": player, "token": token})
+	ctx.JSON(http.StatusOK, gin.H{"token": token, "user": player})
 }
 
 func (h *AuthHandler) Logout(ctx *gin.Context) {

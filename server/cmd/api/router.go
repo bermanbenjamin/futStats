@@ -139,5 +139,7 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 	seasonProtected.Use(middlewares.AuthMiddleware)
 	{
 		seasonProtected.POST("/leagues/:leagueSlug/seasons", dependencies.SeasonHandler.CreateSeason)
+		seasonProtected.GET("/leagues/:leagueSlug/seasons/:seasonId/stats", dependencies.SeasonHandler.GetSeasonStats)
+		seasonProtected.POST("/leagues/:leagueSlug/seasons/:seasonId/finish", dependencies.SeasonHandler.FinishSeason)
 	}
 }

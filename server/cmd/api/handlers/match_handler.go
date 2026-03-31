@@ -38,10 +38,19 @@ func (h *MatchHandler) CreateMatch(c *gin.Context) {
 		return
 	}
 
-	match, err := h.service.CreateMatch(&models.Match{
+	newMatch := &models.Match{
 		LeagueId: leagueId,
 		Date:     date,
-	})
+	}
+	if req.SeasonId != "" {
+		seasonId, err := uuid.Parse(req.SeasonId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid season_id format"})
+			return
+		}
+		newMatch.SeasonId = &seasonId
+	}
+	match, err := h.service.CreateMatch(newMatch)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

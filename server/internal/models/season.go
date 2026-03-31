@@ -9,6 +9,7 @@ type Season struct {
 	Year          string    `json:"year"`
 	EndDate       string    `json:"end"`
 	InitDate      string    `json:"init"`
+	Status        string    `json:"status" gorm:"default:'active'"`
 	GoalsAmount   int       `json:"goals_amount"`
 	AssistsAmount int       `json:"assists_amount"`
 	StrikerId     uuid.UUID `json:"striker_id" gorm:"type:uuid"`
