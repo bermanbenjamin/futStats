@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/bermanbenjamin/futStats/internal/models"
 	"github.com/bermanbenjamin/futStats/internal/repository"
 	"github.com/google/uuid"
@@ -15,11 +17,12 @@ type EventServiceInterface interface {
 }
 
 type EventService struct {
-	repo *repository.EventsRepository
+	repo      *repository.EventsRepository
+	matchRepo *repository.MatchRepository
 }
 
-func NewEventService(repo *repository.EventsRepository) *EventService {
-	return &EventService{repo: repo}
+func NewEventService(repo *repository.EventsRepository, matchRepo *repository.MatchRepository) *EventService {
+	return &EventService{repo: repo, matchRepo: matchRepo}
 }
 
 func (s *EventService) GetEventById(id uuid.UUID) (*models.Event, error) {
@@ -35,6 +38,11 @@ func (s *EventService) GetAllEventsByPlayerId(playerId uuid.UUID) ([]models.Even
 }
 
 func (s *EventService) CreateEvent(event *models.Event) (*models.Event, error) {
+	if event.MatchId != (uuid.UUID{}) {
+		if _, err := s.matchRepo.GetMatchById(event.MatchId); err != nil {
+			return nil, errors.New("match not found")
+		}
+	}
 	return s.repo.CreateEvent(event)
 }
 

@@ -112,6 +112,32 @@ func SetupRouter(router *gin.Engine, dependencies *config.Dependencies) {
 				events.PUT("", dependencies.EventHandler.UpdateEvent)
 				events.DELETE("/:id", dependencies.EventHandler.DeleteEvent)
 			}
+
+			// Match routes (protected)
+			matches := protected.Group("/matches")
+			{
+				matches.GET("/:id", dependencies.MatchHandler.GetMatchById)
+				matches.DELETE("/:id", dependencies.MatchHandler.DeleteMatch)
+			}
+
+			// League match routes (protected POST)
+			leagueMatchesProtected := protected.Group("/leagues")
+			{
+				leagueMatchesProtected.POST("/:leagueSlug/matches", dependencies.MatchHandler.CreateMatch)
+			}
 		}
+	}
+
+	// League match routes (public GET)
+	v1.GET("/leagues/:leagueSlug/matches", dependencies.MatchHandler.GetMatchesByLeague)
+
+	// Season routes (public GET, protected POST)
+	v1.GET("/leagues/:leagueSlug/seasons", dependencies.SeasonHandler.GetSeasonsByLeague)
+	v1.GET("/seasons/:id", dependencies.SeasonHandler.GetSeasonById)
+
+	seasonProtected := v1.Group("")
+	seasonProtected.Use(middlewares.AuthMiddleware)
+	{
+		seasonProtected.POST("/leagues/:leagueSlug/seasons", dependencies.SeasonHandler.CreateSeason)
 	}
 }

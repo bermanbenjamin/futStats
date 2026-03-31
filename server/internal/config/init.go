@@ -19,23 +19,35 @@ type Dependencies struct {
 	LeagueRepository *repository.LeagueRepository
 	LeagueService    *services.LeagueService
 	LeagueHandler    *handlers.LeagueHandler
+	MatchRepository  *repository.MatchRepository
+	MatchService     *services.MatchService
+	MatchHandler     *handlers.MatchHandler
+	SeasonRepository *repository.SeasonRepository
+	SeasonService    *services.SeasonService
+	SeasonHandler    *handlers.SeasonHandler
 }
 
 func InitializeDependencies(db *gorm.DB) *Dependencies {
 	playerRepo := repository.NewPlayerRepository(db)
 	eventRepo := repository.NewEventsRepository(db)
 	leagueRepo := repository.NewLeagueRepository(db)
+	matchRepo := repository.NewMatchRepository(db)
+	seasonRepo := repository.NewSeasonRepository(db)
 
 	// Inject dependencies - normalized approach
 	playerService := services.NewPlayerService(playerRepo, eventRepo)
-	eventService := services.NewEventService(eventRepo)
+	eventService := services.NewEventService(eventRepo, matchRepo)
 	authService := services.NewAuthService(playerService)
 	leagueService := services.NewLeagueService(leagueRepo, playerService)
+	matchService := services.NewMatchService(matchRepo, leagueRepo)
+	seasonService := services.NewSeasonService(seasonRepo, leagueRepo)
 
 	playerHandler := handlers.NewPlayerHandler(playerService)
 	eventHandler := handlers.NewEventsHandler(eventService)
 	authHandler := handlers.NewAuthHandler(authService)
 	leagueHandler := handlers.NewLeagueHandler(leagueService, playerService)
+	matchHandler := handlers.NewMatchHandler(matchService)
+	seasonHandler := handlers.NewSeasonHandler(seasonService)
 
 	return &Dependencies{
 		PlayerRepository: playerRepo,
@@ -49,5 +61,11 @@ func InitializeDependencies(db *gorm.DB) *Dependencies {
 		LeagueRepository: leagueRepo,
 		LeagueService:    leagueService,
 		LeagueHandler:    leagueHandler,
+		MatchRepository:  matchRepo,
+		MatchService:     matchService,
+		MatchHandler:     matchHandler,
+		SeasonRepository: seasonRepo,
+		SeasonService:    seasonService,
+		SeasonHandler:    seasonHandler,
 	}
 }

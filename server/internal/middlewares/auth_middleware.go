@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"net/http"
 	"os"
 
@@ -8,7 +9,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtKey = os.Getenv("SECRET_KEY")
+func getJWTKey() ([]byte, error) {
+	key := os.Getenv("SECRET_KEY")
+	if key == "" {
+		return nil, errors.New("SECRET_KEY is not set")
+	}
+	return []byte(key), nil
+}
 
 type Claims struct {
 	Username string `json:"username"`
@@ -34,7 +41,7 @@ func AuthMiddleware(ctx *gin.Context) {
 	claims := &Claims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
-		return []byte(jwtKey), nil
+		return getJWTKey()
 	})
 
 	if err != nil || !token.Valid {

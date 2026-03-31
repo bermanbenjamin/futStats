@@ -14,8 +14,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var secretKey = os.Getenv("SECRET_KEY")
-
 type Claims struct {
 	Username string `json:"username"`
 	PlayerId string `json:"player_id"`
@@ -32,6 +30,14 @@ func NewAuthService(playerService *PlayerService) *AuthService {
 		playerService: playerService,
 		logger:        logger.GetGlobal().WithComponent("auth_service"),
 	}
+}
+
+func getSecretKey() ([]byte, error) {
+	key := os.Getenv("SECRET_KEY")
+	if key == "" {
+		return nil, errors.New("SECRET_KEY is not set")
+	}
+	return []byte(key), nil
 }
 
 func (s *AuthService) Login(email string, password string) (player *models.Player, token string, err error) {
@@ -123,7 +129,7 @@ func (s *AuthService) Logout(tokenString string) (string, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid token")
 		}
-		return []byte(secretKey), nil
+		return getSecretKey()
 	})
 
 	if err != nil || !token.Valid {
@@ -150,7 +156,12 @@ func (s *AuthService) Logout(tokenString string) (string, error) {
 		},
 	})
 
-	tokenString, err = newToken.SignedString([]byte(secretKey))
+	key, err := getSecretKey()
+	if err != nil {
+		s.logger.Error("Logout failed - secret key not set", zap.Error(err))
+		return "", err
+	}
+	tokenString, err = newToken.SignedString(key)
 	if err != nil {
 		s.logger.Error("Logout failed - token signing error",
 			zap.String("username", username),
@@ -178,14 +189,18 @@ func createToken(username string, playerId string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString([]byte(secretKey))
+	key, err := getSecretKey()
 	if err != nil {
-		// Use global logger since this is a standalone function
+		logger.GetGlobal().Error("Token signing failed - secret key not set", zap.Error(err))
+		return "", err
+	}
+	tokenString, err := token.SignedString(key)
+	if err != nil {
 		logger.GetGlobal().Error("Token signing failed",
 			zap.String("username", username),
 			zap.String("player_id", playerId),
 			zap.Error(err))
-		return "", errors.New("failed to signed token string")
+		return "", errors.New("failed to sign token string")
 	}
 
 	return tokenString, nil
