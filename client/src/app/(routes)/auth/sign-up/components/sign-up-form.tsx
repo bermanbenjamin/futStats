@@ -3,6 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSignUpService } from "@/http/auth/use-auth-service";
+import { useSessionStore } from "@/stores/session-store";
+import { setCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignUpForm() {
@@ -11,15 +14,20 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [birthdate, setBirthdate] = useState("");
+  const { setPlayer } = useSessionStore();
+  const router = useRouter();
 
   const signUpMutation = useSignUpService({
     onSuccess: (data) => {
-      // Store token and redirect
-      localStorage.setItem("token", data.token);
-      window.location.href = "/dashboard";
+      if (data.user?.id) {
+        setCookie("token", data.token);
+        setPlayer(data.user);
+        router.push(`/${data.user.id}`);
+      } else {
+        alert("Registration successful but no player data received");
+      }
     },
-    onError: (error) => {
-      console.error("Registration error:", error);
+    onError: () => {
       alert("Registration failed. Please try again.");
     },
   });
@@ -27,7 +35,6 @@ export default function SignUpForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic form validation
     if (!name || !email || !password || !confirmPassword || !birthdate) {
       alert("Please fill in all fields");
       return;
@@ -43,7 +50,6 @@ export default function SignUpForm() {
       return;
     }
 
-    // Calculate age from birthdate
     const birthDate = new Date(birthdate);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
@@ -54,7 +60,6 @@ export default function SignUpForm() {
         ? age - 1
         : age;
 
-    // Use the proper auth service
     signUpMutation.mutate({ name, email, password, age: finalAge });
   };
 

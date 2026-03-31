@@ -15,43 +15,26 @@ export default function SignInForm() {
 
   const signInMutation = useSignInService({
     onSuccess: (data) => {
-      console.log("Login successful, data:", data);
-      console.log("Player ID:", data.player?.id);
-
-      // Store token and player data
-      localStorage.setItem("token", data.token);
-
       if (data.player?.id) {
-        // Set player in session store to prevent sidebar redirect
         setPlayer(data.player);
-        console.log("Player set in session store");
 
-        console.log("Redirecting to:", `/${data.player.id}`);
         router.push(`/${data.player.id}`);
       } else {
-        console.error("No player ID in response");
         alert("Login successful but no player data received");
       }
     },
-    onError: (error) => {
-      console.error("Login error:", error);
+    onError: () => {
       alert("Login failed. Please try again.");
     },
   });
 
   const handleSubmit = async () => {
-    console.log("Button clicked, handling login");
-
-    // Basic form validation
     if (!email || !password) {
       alert("Please fill in all fields");
       return;
     }
 
-    console.log("About to call mutation with:", { email, password });
-    // Use the proper auth service
     signInMutation.mutate({ email, password });
-    console.log("Mutation called");
   };
 
   return (
