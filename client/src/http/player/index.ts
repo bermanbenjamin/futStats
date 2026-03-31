@@ -10,4 +10,8 @@ async function getPlayerByEmail(email: string): Promise<Player> {
   return response.json();
 }
 
-export { getPlayerByEmail };
+async function getPlayerById(id: string): Promise<{ data: Player }> {
+  return api.get(`v1/players/${id}`).json<{ data: Player }>();
+}
+
+export { getPlayerByEmail, getPlayerById };
