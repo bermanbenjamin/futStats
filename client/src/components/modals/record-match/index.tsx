@@ -43,12 +43,14 @@ interface RecordMatchModalProps {
   leagueId: string;
   leagueSlug: string;
   players: Player[];
+  seasonId?: string;
 }
 
 function RecordMatchModalContent({
   leagueId,
   leagueSlug,
   players,
+  seasonId,
 }: RecordMatchModalProps) {
   const [isOpen, setIsOpen] = useQueryState("record-match");
   const [matchId, setMatchId] = useState<string | null>(null);
@@ -73,7 +75,7 @@ function RecordMatchModalContent({
 
   async function onCreateMatch(values: MatchFormValues) {
     const date = new Date(values.date).toISOString();
-    await createMatch({ league_id: leagueId, date });
+    await createMatch({ league_id: leagueId, date, season_id: seasonId });
   }
 
   async function onAddEvent(
@@ -180,3 +182,4 @@ export function RecordMatchModal(props: RecordMatchModalProps) {
     </Suspense>
   );
 }
+
