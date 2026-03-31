@@ -21,16 +21,26 @@ export type Player = {
   matches: number;
   red_cards: number;
   yellow_cards: number;
-  member_leagues: League[] | null;
+  member_of_leagues: League[] | null;
   owned_leagues: League[] | null;
 };
 
-type Season = {
-  ID: string; // UUID
-  name: string;
-  startDate: string; // ISO 8601 date string
-  endDate: string; // ISO 8601 date string
-  leagues: League[]; // Many-to-many relationship with League
+export type Season = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  year: string;
+  init_date: string;
+  end_date: string;
+  status: "active" | "finished";
+  goals_amount: number;
+  assists_amount: number;
+  striker_id: string | null;
+  striker: Player | null;
+  waiter_id: string | null;
+  waiter: Player | null;
+  best_player_id: string | null;
+  best_player: Player | null;
 };
 
 export type League = Base & {
@@ -38,6 +48,6 @@ export type League = Base & {
   owner: Player; // Foreign key relationship
   name: string;
   slug: string;
-  seasons: Season[]; // Many-to-many relationship with Season
+  seasons: Season[] | null;
   members: Player[]; // Many-to-many relationship with Player
 };

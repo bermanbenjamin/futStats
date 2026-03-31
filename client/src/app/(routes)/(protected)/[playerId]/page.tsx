@@ -43,7 +43,7 @@ export default function PlayerPage({
 
   const allLeagues = [
     ...(player.owned_leagues ?? []),
-    ...(player.member_leagues ?? []),
+    ...(player.member_of_leagues ?? []),
   ].filter(
     (league, index, self) => self.findIndex((l) => l.id === league.id) === index
   );

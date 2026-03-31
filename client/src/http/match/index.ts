@@ -3,6 +3,7 @@ import { api } from "@/lib/api";
 export type Match = {
   id: string;
   league_id: string;
+  season_id?: string;
   date: string;
   createdAt: string;
   events: MatchEvent[];
@@ -19,6 +20,7 @@ export type MatchEvent = {
 export type CreateMatchRequest = {
   league_id: string;
   date: string;
+  season_id?: string;
 };
 
 export type CreateEventRequest = {
@@ -31,7 +33,11 @@ export type CreateEventRequest = {
 async function createMatch(data: CreateMatchRequest): Promise<{ data: Match }> {
   return api
     .post(`v1/leagues/${data.league_id}/matches`, {
-      json: { league_id: data.league_id, date: data.date },
+      json: {
+        league_id: data.league_id,
+        date: data.date,
+        ...(data.season_id ? { season_id: data.season_id } : {}),
+      },
     })
     .json<{ data: Match }>();
 }

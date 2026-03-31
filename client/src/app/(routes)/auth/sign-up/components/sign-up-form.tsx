@@ -7,6 +7,7 @@ import { useSessionStore } from "@/stores/session-store";
 import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SignUpForm() {
   const [name, setName] = useState("");
@@ -24,11 +25,11 @@ export default function SignUpForm() {
         setPlayer(data.user);
         router.push(`/${data.user.id}`);
       } else {
-        alert("Registration successful but no player data received");
+        toast("Registration successful but no player data received");
       }
     },
     onError: () => {
-      alert("Registration failed. Please try again.");
+      toast.error("Registration failed. Please try again.");
     },
   });
 
@@ -36,17 +37,17 @@ export default function SignUpForm() {
     e.preventDefault();
 
     if (!name || !email || !password || !confirmPassword || !birthdate) {
-      alert("Please fill in all fields");
+      toast.error("Please fill in all fields");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
     if (password.length < 6) {
-      alert("Password must be at least 6 characters long");
+      toast.error("Password must be at least 6 characters long");
       return;
     }
 

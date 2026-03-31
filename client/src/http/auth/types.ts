@@ -2,8 +2,7 @@ import { Player } from "../types";
 
 export type SignInResponse = {
   token: string;
-  expires: string;
-  player: Player;
+  user: Player;
 };
 
 export type SignInRequest = {

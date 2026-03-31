@@ -6,6 +6,7 @@ import { useSignInService } from "@/http/auth/use-auth-service";
 import { useSessionStore } from "@/stores/session-store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
@@ -15,22 +16,22 @@ export default function SignInForm() {
 
   const signInMutation = useSignInService({
     onSuccess: (data) => {
-      if (data.player?.id) {
-        setPlayer(data.player);
+      if (data.user?.id) {
+        setPlayer(data.user);
 
-        router.push(`/${data.player.id}`);
+        router.push(`/${data.user.id}`);
       } else {
-        alert("Login successful but no player data received");
+        toast("Login successful but no player data received");
       }
     },
     onError: () => {
-      alert("Login failed. Please try again.");
+      toast.error("Login failed. Please try again.");
     },
   });
 
   const handleSubmit = async () => {
     if (!email || !password) {
-      alert("Please fill in all fields");
+      toast.error("Please fill in all fields");
       return;
     }
 

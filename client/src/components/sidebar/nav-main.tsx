@@ -58,7 +58,7 @@ export function NavMain() {
             href: `/${player.id}/leagues/${league.slug}`,
             exact: true,
           })) || []),
-          ...(player.member_leagues?.map((league) => ({
+          ...(player.member_of_leagues?.map((league) => ({
             name: league.name,
             icon: Icons.shield,
             href: `/${player.id}/leagues/${league.slug}`,
