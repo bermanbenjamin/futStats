@@ -29,7 +29,7 @@ export default function useCreateLeagueForm() {
           ...player!,
           owned_leagues: player!.owned_leagues!.concat(league),
         });
-        router.push(appRoutes.player.leagues.get(league.id));
+        router.push(appRoutes.player.leagues.get(player!.id, league.slug));
         queryClient.invalidateQueries({ queryKey: ["leagues"] });
       },
     });

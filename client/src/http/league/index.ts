@@ -22,7 +22,7 @@ async function getLeagueService(id: string) {
 
 async function addPlayerToLeague(email: string, slug: string) {
   return await api
-    .post(`v1/${slug}/players`, {
+    .post(`v1/leagues/${slug}/players`, {
       json: {
         email,
       },

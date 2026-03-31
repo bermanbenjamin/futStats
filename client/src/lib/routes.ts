@@ -12,8 +12,9 @@ export const appRoutes = {
     library: "/player/library",
     settings: "/player/settings",
     leagues: {
-      create: "/player/leagues/create",
-      get: (id: string) => `/player/leagues/${id}`,
+      create: (playerId: string) => `/${playerId}/leagues/create`,
+      get: (playerId: string, leagueSlug: string) =>
+        `/${playerId}/leagues/${leagueSlug}`,
     },
   },
 };
